@@ -1,11 +1,12 @@
 import Link from 'next/link'
+import config from '../shapeup.config'
 
 export default function Header() {
   return (
     <div className="lg:flex lg:justify-between">
       <div className="max-w-xl">
         <a href="https://www.asyncapi.com" target="_blank">
-          <img src="/asyncapi-horizontal-color.svg" className="h-7 mb-4" />
+          <img src="/logo.svg" className="h-7 mb-4" />
         </a>
         <Link href="/">
           <a>
@@ -14,7 +15,9 @@ export default function Header() {
             </h2>
           </a>
         </Link>
-        <p className="mt-5 text-xl leading-7 text-gray-500">Visualize the progress we're making, one cycle at a time. Don't know what Shape Up is about? <Link href="/introduction"><a className="text-pink-500 font-semibold hover:text-pink-700">Learn more.</a></Link></p>
+        <p className="mt-5 text-xl leading-7 text-gray-500">
+          <div dangerouslySetInnerHTML={{ __html: config.tagline }} />
+        </p>
       </div>
     </div>
   )

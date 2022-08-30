@@ -12,7 +12,7 @@ export default function Help() {
 
       <div className="flex flex-col items-center max-w-screen-xl mx-auto pt-4 pb-8 px-4 sm:px-6 md:flex-row md:justify-between lg:px-8">
         <a href="https://www.asyncapi.com" target="_blank" className="-mb-4 mt-4 sm:mt-0">
-          <img src="/asyncapi-horizontal-color.svg" className="h-7 mb-4" />
+          <img src="/logo.svg" className="h-7 mb-4" />
         </a>
         <Link href="/">
           <a className="group flex mt-6 text-gray-500 hover:text-gray-800 transition-all duration-100 ease-in-out sm:mt-0">
