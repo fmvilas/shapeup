@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import stringToColor from 'string-to-color'
 import nearestColor from 'nearest-color'
 import Bet from './Bet'
@@ -13,49 +13,30 @@ import Cycle from './Cycle'
 
 export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCycle, availablePitches = [], availableBets = [], availableScopes = [], params }) {
   const router = useRouter()
-  const queryParams = new URLSearchParams(router.asPath.split('?')[1])
-  let visibleBet = availableBets[0] || null
-  if (queryParams.has('bet')) {
-    visibleBet = availableBets.find(bet => bet.issue_number === Number(queryParams.get('bet'))) || visibleBet
-  }
-  let visibleScopes = availableScopes.filter(scope => belongsToBet(visibleBet, scope))
-  let selectedScopes = visibleScopes
-  if (queryParams.has('scopes')) {
-    selectedScopes = queryParams.get('scopes').split(',').filter(Boolean).map(id => availableScopes.find(scope => scope.issue_number === Number(id)))
-  }
+  const [visibleBet, setVisibleBet] = useState(availableBets[0] || null)
+  const visibleScopes = availableScopes.filter(scope => belongsToBet(visibleBet, scope))
+  const [selectedScopes, setSelectedScopes] = useState(visibleScopes)
 
   useEffect(() => {
     if (!params || !params.id) replaceRoute()
   }, [])
 
   function replaceRoute() {
-    const queryString = queryParams.toString().length ? `?${queryParams.toString()}` : ''
-    router.replace(`/cycles/${visibleCycle.id}${queryString}`)
+    router.replace(`/cycles/${visibleCycle.id}`)
   }
 
   function onBetChange({ issue, toggled }) {
     if (toggled) {
-      queryParams.set('bet', issue.issue_number)
-      queryParams.delete('scopes')
-      replaceRoute()
+      setVisibleBet(issue)
     }
   }
 
   function onScopeChange({ issue, toggled }) {
-    let scopeIds
-    if (queryParams.has('scopes')) {
-      scopeIds = (queryParams.get('scopes') || '').split(',').filter(Boolean)
+    if (toggled) {
+      setSelectedScopes([...selectedScopes, issue])
     } else {
-      scopeIds = visibleScopes.map(s => String(s.number))
+      setSelectedScopes(selectedScopes.filter(sc => sc.url !== issue.url))
     }
-
-    if (toggled && !scopeIds.find(id => id === String(issue.number))) {
-      scopeIds.push(issue.number)
-    } else if (!toggled) {
-      scopeIds = scopeIds.filter(id => id !== String(issue.number))
-    }
-    queryParams.set('scopes', scopeIds)
-    replaceRoute()
   }
 
   return (
@@ -82,7 +63,7 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
                 <div>
                   {
                     availableBets.map((bet, index) => (
-                      <Bet key={index} issue={bet} toggled={visibleBet && bet.issue_number === visibleBet.issue_number} className="mt-3" onChange={onBetChange} />
+                      <Bet key={index} issue={bet} toggled={visibleBet && bet.url === visibleBet.url} disabled={availableBets.length === 1} className="mt-3" onChange={onBetChange} />
                     ))
                   }
                   {
@@ -104,7 +85,7 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
                 <div>
                   {
                     (visibleScopes || []).map((scope, index) => (
-                      <Scope key={index} toggled={!!selectedScopes.find(s => s.number === scope.number)} issue={scope} onChange={onScopeChange} className="mt-3" />
+                      <Scope key={index} issue={scope} toggled={!!selectedScopes.find(s => s.url === scope.url)} onChange={onScopeChange} className="mt-3" />
                     ))
                   }
                   {
@@ -146,13 +127,11 @@ export async function getServerSideProps({ params = {} }) {
   data.previousCycle = visibleCycleIndex > 0 ? data.cycles[visibleCycleIndex - 1] : null
   data.nextCycle = visibleCycleIndex < data.cycles.length - 1 ? data.cycles[visibleCycleIndex + 1] : null
 
-  data.availablePitches = data.pitches.filter(b => b.milestone && data.visibleCycle && b.milestone.id === data.visibleCycle.id)
-  data.availableBets = data.bets.filter(b => b.milestone && data.visibleCycle && b.milestone.id === data.visibleCycle.id)
+  data.availablePitches = data.pitches.filter(p => p.cycle === data.visibleCycle.id)
+  data.availableBets = data.bets.filter(b => b.cycle === data.visibleCycle.id)
 
   data.availableScopes = data.scopes.map(scope => {
-    const scopeProgress = data.progress.find(p => p.issue_number === scope.number)
-    scope.progress = scopeProgress || null
-    scope.color = nearestColor.from(colors)(stringToColor(`${scope.title} ${scope.issue_number}`))
+    scope.color = nearestColor.from(colors)(stringToColor(`${scope.title} ${scope.url}`))
     return scope
   })
 
@@ -171,15 +150,15 @@ function getVisibleCycleDetails(id) {
   if (id) {
     cycle = data.cycles.find(cycle => String(cycle.id) === id)
     if (cycle) {
-      const startDate = new Date(cycle.start_date)
-      const endDate = new Date(cycle.due_on)
+      const startDate = new Date(cycle.startDate)
+      const endDate = new Date(cycle.endDate)
       const now = new Date()
       inCycle = (startDate <= now && endDate >= now)
     }
   } else {
     cycle = data.cycles.find(c => {
-      const startDate = new Date(c.start_date)
-      const endDate = new Date(c.due_on)
+      const startDate = new Date(c.startDate)
+      const endDate = new Date(c.endDate)
       const now = new Date()
       if (endDate < now) return false
       if (startDate <= now && endDate >= now) inCycle = true
@@ -194,7 +173,6 @@ function getVisibleCycleDetails(id) {
 }
 
 function belongsToBet(bet, scope) {
-  if (!bet) return false
-  if (!scope || !scope.parent_epics || scope.parent_epics.length === 0) return false
-  return !!scope.parent_epics.find(pe => pe.issue_number === bet.number && pe.repo_id === bet.repo_id)
+  if (!bet || !scope) return false
+  return scope.bet === bet.url
 }

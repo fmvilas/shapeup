@@ -1,6 +1,5 @@
 const { writeFileSync } = require('fs')
 const { resolve } = require('path')
-const fetch = require('node-fetch')
 const { graphql } = require('@octokit/graphql')
 require('dotenv').config({
   path: resolve(process.cwd(), '.env.local')
@@ -8,64 +7,100 @@ require('dotenv').config({
 
 async function start () {
   try {
-    let res = await fetch('https://api.zenhub.com/v4/workspaces/296590488/open-milestones?workspaceId=5f6492205269c584ae1b576f', {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Authentication-Token': process.env.ZENHUB_TOKEN,
-      },
-    })
-    let cycles = await res.json()
-    cycles = Object.values(cycles).flat()
-    
-    res = await fetch('https://api.zenhub.com/v5/workspaces/5f6492205269c584ae1b576f/issues?epics=1&estimates=1&pipelines=0&repo_ids=296590488', {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Authentication-Token': process.env.ZENHUB_TOKEN,
-      },
-    })
-    const issues = await res.json()
-    const pitches = issues.filter(iss => iss.labels.length && iss.labels.find(label => label.name === 'Pitch'))
-    const bets = issues.filter(iss => iss.labels.length && iss.labels.find(label => label.name === 'Bet'))
-    const scopes = issues.filter(iss => iss.labels.length && iss.labels.find(label => label.name === 'Scope'))
-
-    const scopesWithComments = await graphql(`
-      query scopesWithComments($owner: String!, $repo: String!) {
-        repository(owner: $owner, name: $repo) {
-          issues(labels: ["Scope"], last: 100) {
-            edges {
-              node {
-                number
-                closed
-                closedAt
-                comments(last: 100) {
-                  edges {
-                    node {
-                      body
-                      bodyText
-                      createdAt
-                      updatedAt
+    const data = await graphql(`
+      query($owner: String!, $projectNumber: Int!) {
+        user(login: $owner) {
+          projectV2(number: $projectNumber) {
+            items(first: 100) {
+              edges {
+                node {
+                  content {
+                    ...on Issue {
+                      title
                       url
+                      number
+                      closed
+                      closedAt
                       author {
-                        avatarUrl(size: 100)
-                        ... on User {
-                          name
-                          url
+                        login
+                        avatarUrl
+                      }
+                      comments(last: 100) {
+                        edges {
+                          node {
+                            body
+                            bodyText
+                            createdAt
+                            updatedAt
+                            url
+                            author {
+                              avatarUrl(size: 100)
+                              ... on User {
+                                name
+                                url
+                              }
+                            }
+                          }
+                        }
+                      }
+                      timelineItems(last: 100) {
+                        nodes {
+                          ... on ClosedEvent {
+                            url
+                            actor {
+                              avatarUrl(size: 100)
+                              ... on User {
+                                name
+                                url
+                              }
+                            }
+                          }
                         }
                       }
                     }
-                  }
-                }
-                timelineItems(last: 100) {
-                  nodes {
-                    ... on ClosedEvent {
+                    ...on PullRequest {
+                      title
                       url
-                      actor {
-                        avatarUrl(size: 100)
-                        ... on User {
+                      number
+                    }
+                  }
+                  fieldValues(first: 100) {
+                    edges {
+                      node {
+                        ...on ProjectV2ItemFieldNumberValue {
+                          field {
+                            ...on ProjectV2Field {
+                              name
+                            }
+                          }
+                          number
+                        }
+                        ...on ProjectV2ItemFieldSingleSelectValue {
+                          field {
+                            ...on ProjectV2SingleSelectField {
+                              name
+                            }
+                          }
                           name
-                          url
+                        }
+                        ...on ProjectV2ItemFieldTextValue {
+                          field {
+                            ...on ProjectV2Field {
+                              name
+                            }
+                          }
+                          text
+                        }
+                        ...on ProjectV2ItemFieldIterationValue {
+                          field {
+                            ...on ProjectV2IterationField {
+                              name
+                            }
+                          }
+                          iterationId
+                          title
+                          startDate
+                          duration
                         }
                       }
                     }
@@ -78,28 +113,57 @@ async function start () {
       }
     `,
       {
-        owner: 'asyncapi',
-        repo: 'shape-up-process',
+        owner: process.env.OWNER,
+        projectNumber: parseInt(process.env.PROJECT_NUMBER),
         headers: {
           authorization: `token ${process.env.GITHUB_TOKEN}`,
         },
       }
     )
 
-    const progress = scopesWithComments.repository.issues.edges.map(sc => {
+    const projectData = data.user.projectV2.items.edges
+    const cycles = []
+    const issues = projectData.map(item => {
+      const cycleNode = item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Cycle')?.node
+      if (!cycles.find(cycle => cycle.id === cycleNode.iterationId)) {
+        const startDate = new Date(cycleNode.startDate)
+        const endDate = new Date(startDate)
+        endDate.setDate(endDate.getDate() + cycleNode.duration)
+        cycleNode.endDate = endDate
+        cycleNode.startDate = startDate.toISOString()
+        cycleNode.id = cycleNode.iterationId
+        delete cycleNode.iterationId
+        cycles.push(cycleNode)
+      }
+
       return {
-        issue_number: sc.node.number,
-        percentage: sc.node.closed === true ? 100 : getCurrentPercentage(sc.node.comments.edges.map(edge => edge.node.bodyText)),
-        history: getHistory(sc.node),
+        title: item.node.content.title,
+        url: item.node.content.url,
+        number: item.node.content.number,
+        closed: item.node.content.closed,
+        closedAt: item.node.content.closedAt,
+        author: item.node.content.author,
+        bet: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Bet')?.node.text,
+        kind: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Kind')?.node.name,
+        appetite: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Appetite')?.node.name,
+        cycle: cycles.find(cycle => cycle.id === cycleNode.id)?.id,
+        progress: {
+          issue_number: item.node.content.number,
+          percentage: item.node.content.closed === true ? 100 : getCurrentPercentage(item.node.content.comments.edges.map(edge => edge.node.bodyText)),
+          history: getHistory(item.node.content),
+        }
       }
     })
+    
+    const pitches = issues.filter(issue => issue.kind === 'Pitch')
+    const bets = issues.filter(issue => issue.kind === 'Bet')
+    const scopes = issues.filter(issue => issue.kind === 'Scope')
 
     const result = {
       cycles,
       pitches,
       bets,
       scopes,
-      progress,
     }
 
     writeFileSync(resolve(__dirname, '..', 'data.json'), JSON.stringify(result, null, '  '))

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 
 export default function Toggle({
   toggled,
+  disabled = false,
   onChange = () => {},
   className = '',
 }) {
@@ -21,7 +22,7 @@ export default function Toggle({
   }
 
   return (
-    <span role="checkbox" onClick={onClickToggle} tabIndex="0" aria-checked="false" className={`${isToggled ? 'bg-indigo-600' : 'bg-gray-200'} ${className} relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline`}>
+    <span role="checkbox" aria-disabled={disabled} onClick={onClickToggle} tabIndex="0" aria-checked="false" className={`${isToggled && !disabled ? 'bg-indigo-600' : 'bg-gray-200'} ${disabled ? 'opacity-30' : 'cursor-pointer'} ${className} relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline`}>
       <span aria-hidden="true" className={`${isToggled ? 'translate-x-5' : 'translate-x-0'} relative inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200`}>
         <span className={`${isToggled ? 'opacity-0 ease-out duration-100' : 'opacity-100 ease-in duration-200'} absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}>
           <svg className="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
