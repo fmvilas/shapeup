@@ -1,11 +1,7 @@
 name: Deploy to Netlify
 on:
-  issues:
-    types: [opened, deleted, closed, reopened, labeled, unlabeled, milestoned, demilestoned]
-  issue_comment:
-    types: [created, edited, deleted]
-  milestone:
-    types: [created, edited, deleted]
+  schedule:
+    - cron: '*/10 * * * *'
 
 jobs:
   publish:
