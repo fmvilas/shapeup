@@ -16,7 +16,7 @@
     "linear-scale": "0.0.3",
     "luxon": "^1.25.0",
     "nearest-color": "^0.4.4",
-    "next": "^10.0.3",
+    "next": "^12.2.5",
     "next-on-netlify": "^2.6.3",
     "postcss": "^8.1.10",
     "react": "17.0.1",
