@@ -1,6 +1,7 @@
 const { writeFileSync } = require('fs')
 const { resolve } = require('path')
 const { graphql } = require('@octokit/graphql')
+const config = require('../shapeup.config')
 require('dotenv').config({
   path: resolve(process.cwd(), '.env.local')
 })
@@ -113,8 +114,8 @@ async function start () {
       }
     `,
       {
-        owner: process.env.OWNER,
-        projectNumber: parseInt(process.env.PROJECT_NUMBER),
+        owner: config.owner,
+        projectNumber: config.projectNumber,
         headers: {
           authorization: `token ${process.env.GITHUB_TOKEN}`,
         },
