@@ -44,7 +44,7 @@ export default function CycleHeader({ visibleCycle, inCycle, previousCycle, next
         <div className="flex">
           {
             !previousCycle ? previousCycleButton : (
-              <Link href={previousCycle ? `/cycles/${previousCycle.id}` : ''}>
+              <Link href={`/cycles/${previousCycle.id}`}>
                 {previousCycleButton}
               </Link>
             )
@@ -52,7 +52,7 @@ export default function CycleHeader({ visibleCycle, inCycle, previousCycle, next
           
           {
             !nextCycle ? nextCycleButton : (
-              <Link href={nextCycle ? `/cycles/${nextCycle.id}` : ''}>
+              <Link href={`/cycles/${nextCycle.id}`}>
                 {nextCycleButton}
               </Link>
             )
