@@ -5,6 +5,22 @@ export default function CycleHeader({ visibleCycle, inCycle, previousCycle, next
   const dueOnDate = DateTime.fromISO(visibleCycle.endDate)
   const remainingDays = Math.floor(dueOnDate.diffNow('days').toObject().days)
 
+  const previousCycleButton = (
+    <a title={previousCycle && 'Go to the previous cycle'}>
+      <svg className={`w-6 h-6 ${!previousCycle && 'text-gray-300'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </a>
+  )
+
+  const nextCycleButton = (
+    <a title={previousCycle && 'Go to the next cycle'}>
+      <svg className={`w-6 h-6 ${!nextCycle && 'text-gray-300'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+  )
+
   return (
     <>
       <div className="flex">
@@ -26,21 +42,21 @@ export default function CycleHeader({ visibleCycle, inCycle, previousCycle, next
           }
         </h2>
         <div className="flex">
-          <Link href={previousCycle ? `/cycles/${previousCycle.id}` : ''}>
-            <a title="Go to the previous cycle">
-              <svg className={`w-6 h-6 ${!previousCycle && 'text-gray-300'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            </a>
-          </Link>
-
-          <Link href={nextCycle ? `/cycles/${nextCycle.id}` : ''}>
-            <a title="Go to the next cycle">
-              <svg className={`w-6 h-6 ${!nextCycle && 'text-gray-300'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-          </Link>
+          {
+            !previousCycle ? previousCycleButton : (
+              <Link href={previousCycle ? `/cycles/${previousCycle.id}` : ''}>
+                {previousCycleButton}
+              </Link>
+            )
+          }
+          
+          {
+            !nextCycle ? nextCycleButton : (
+              <Link href={nextCycle ? `/cycles/${nextCycle.id}` : ''}>
+                {nextCycleButton}
+              </Link>
+            )
+          }
         </div>
       </div>
       <p className="my-4 text-gray-500">{inCycle ? 'The current' : 'This'} cycle {isPastCycle || inCycle ? 'started' : 'starts'} on {new Date(visibleCycle.startDate).toDateString()} and {isPastCycle ? 'finished' : 'will finish'} on {new Date(visibleCycle.endDate).toDateString()}.</p>
