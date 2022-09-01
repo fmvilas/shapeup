@@ -131,7 +131,7 @@ export async function getServerSideProps({ params = {} }) {
   data.availableBets = data.bets.filter(b => b.cycle === data.visibleCycle.id)
 
   data.availableScopes = data.scopes.map(scope => {
-    scope.color = nearestColor.from(colors)(stringToColor(`${scope.title} ${scope.url}`))
+    scope.color = nearestColor.from(colors)(stringToColor(scope.url.replace('https://github.com/', '')))
     return scope
   })
 
