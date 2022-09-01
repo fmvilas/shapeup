@@ -2,13 +2,13 @@
 name: Scope
 about: A scope of a bet
 title: ''
-labels: Scope
 assignees: ''
 
 ---
 
 ## Remember
 
-* This issue must be an **epic**
-* Point it to its corresponding **Bet epic**.
+* Set `Kind` to `Scope`.
+* Set `Cycle` to the corresponding one.
+* Point it to its corresponding **Bet**.
 * Craft a good description :wink:
