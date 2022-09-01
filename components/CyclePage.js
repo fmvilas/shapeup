@@ -18,6 +18,10 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
   const [selectedScopes, setSelectedScopes] = useState(visibleScopes)
 
   useEffect(() => {
+    setSelectedScopes(availableScopes.filter(scope => belongsToBet(visibleBet, scope)))
+  }, [visibleBet])
+
+  useEffect(() => {
     if (!params || !params.id) replaceRoute()
   }, [])
 
