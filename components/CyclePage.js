@@ -61,7 +61,7 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
                     Bets
                   </h3>
-                  <p className="max-w-4xl text-sm leading-5 text-gray-500">Ideas we're now <strong>committed</strong> to implement during this 6 weeks cycle.</p>
+                  <p className="max-w-4xl text-sm leading-5 text-gray-500">Ideas I'm now <strong>committed</strong> to implement during this 6 weeks cycle.</p>
                 </div>
 
                 <div>
