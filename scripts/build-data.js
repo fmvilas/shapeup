@@ -125,7 +125,7 @@ async function start () {
     const projectData = data.user.projectV2.items.edges
     const cycles = []
     const issues = projectData.map(item => {
-      const cycleNode = item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Cycle')?.node
+      let cycleNode = item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Cycle')?.node
       if (!cycles.find(cycle => cycle.id === cycleNode.iterationId)) {
         const startDate = new Date(cycleNode.startDate)
         const endDate = new Date(startDate)
@@ -135,6 +135,8 @@ async function start () {
         cycleNode.id = cycleNode.iterationId
         delete cycleNode.iterationId
         cycles.push(cycleNode)
+      } else {
+        cycleNode = cycles.find(cycle => cycle.id === cycleNode.iterationId)
       }
 
       return {
@@ -147,7 +149,7 @@ async function start () {
         bet: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Bet')?.node.text,
         kind: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Kind')?.node.name,
         appetite: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Appetite')?.node.name,
-        cycle: cycles.find(cycle => cycle.id === cycleNode.id)?.id,
+        cycle: cycleNode.id,
         progress: {
           issue_number: item.node.content.number,
           percentage: item.node.content.closed === true ? 100 : getCurrentPercentage(item.node.content.comments.edges.map(edge => edge.node.bodyText)),
