@@ -13,21 +13,25 @@ import Cycle from './Cycle'
 
 export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCycle, availablePitches = [], availableBets = [], availableScopes = [], params }) {
   const router = useRouter()
-  const [visibleBet, setVisibleBet] = useState(availableBets[0] || null)
-  const visibleScopes = availableScopes.filter(scope => belongsToBet(visibleBet, scope))
+  const [visibleBet, setVisibleBet] = useState(availableBets.find(bet => belongsToCycle(visibleCycle, bet)))
+  const [visibleScopes, setVisibleScopes] = useState(availableScopes.filter(scope => belongsToBet(visibleBet, scope)))
   const [selectedScopes, setSelectedScopes] = useState(visibleScopes)
 
   useEffect(() => {
-    setSelectedScopes(availableScopes.filter(scope => belongsToBet(visibleBet, scope)))
+    const allBetScopes = availableScopes.filter(scope => belongsToBet(visibleBet, scope))
+    setVisibleScopes(allBetScopes)
+    setSelectedScopes(allBetScopes)
   }, [visibleBet])
+  
+  useEffect(() => {
+    setVisibleBet(availableBets.find(bet => belongsToCycle(visibleCycle, bet)))
+  }, [visibleCycle])
 
   useEffect(() => {
-    if (!params || !params.id) replaceRoute()
+    if (!params || !params.id) {
+      router.replace(`/cycles/${visibleCycle.id}`)
+    }
   }, [])
-
-  function replaceRoute() {
-    router.replace(`/cycles/${visibleCycle.id}`)
-  }
 
   function onBetChange({ issue, toggled }) {
     if (toggled) {
@@ -179,4 +183,9 @@ function getVisibleCycleDetails(id) {
 function belongsToBet(bet, scope) {
   if (!bet || !scope) return false
   return scope.bet === bet.url
+}
+
+function belongsToCycle(cycle, bet) {
+  if (!cycle || !bet) return false
+  return bet.cycle === cycle.id
 }
