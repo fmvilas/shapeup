@@ -1,6 +1,6 @@
 name: Pitch
 description: 'Do you want me to work on something? Time to pitch!'
-title: ''
+title: '[PITCH]:'
 labels: ['Pitch']
 body:
   - type: input
