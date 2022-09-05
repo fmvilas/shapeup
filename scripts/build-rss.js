@@ -2,16 +2,6 @@ const fs = require('fs')
 const json2xml = require('jgexml/json2xml')
 const data = require('../data.json')
 
-function clean(s) {
-  s = s.split('&ltspan&gt').join('')
-  s = s.split('&amp').join('&')
-  s = s.split('&#39;').join("'")
-  s = s.split('&lt;').join('<')
-  s = s.split('&gt;').join('>')
-  s = s.split('&quot;').join('"')
-  return s
-}
-
 const base = 'https://shapeup.franmendez.blog'
 const tracking = '?utm_source=rss';
 
