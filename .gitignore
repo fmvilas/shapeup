@@ -32,3 +32,4 @@ yarn-error.log*
 
 # custom
 data.json
+public/rss.xml

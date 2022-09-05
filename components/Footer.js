@@ -3,6 +3,10 @@ export default function Footer() {
     <footer className="bg-white">
       <div className="max-w-screen-xl mx-auto pt-12 pb-8 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
         <div className="flex justify-center space-x-6 md:order-2">
+          <a href="https://app.netlify.com/sites/subtle-tapioca-75be37/deploys" title="Netlify Status" target="_blank" className="text-gray-400 hover:text-gray-800">
+            <span className="sr-only">Netlify Status</span>
+            <img className="h-4 mt-1" src="https://api.netlify.com/api/v1/badges/2ad7c490-7574-4fc5-9974-5db9a6f8eb06/deploy-status" />
+          </a>
           <a href="https://twitter.com/fmvilas" title="Twitter" target="_blank" className="text-gray-400 hover:text-gray-800">
             <span className="sr-only">Twitter</span>
             <svg className="h-6 w-6" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
