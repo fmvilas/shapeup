@@ -22,6 +22,7 @@ async function start () {
                       number
                       closed
                       closedAt
+                      createdAt
                       author {
                         login
                         avatarUrl
@@ -147,6 +148,7 @@ async function start () {
         number: item.node.content.number,
         closed: item.node.content.closed,
         closedAt: item.node.content.closedAt,
+        createdAt: item.node.content.createdAt,
         author: item.node.content.author,
         bet: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Bet')?.node.text,
         kind,

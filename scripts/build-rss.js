@@ -12,18 +12,7 @@ function clean(s) {
   return s
 }
 
-const posts = data
-  .filter(p => p.slug.startsWith(`/${type}/`))
-  .sort((i1, i2) => {
-    const i1Date = new Date(i1.date)
-    const i2Date = new Date(i2.date)
-
-    if (i1.featured && !i2.featured) return -1
-    if (!i1.featured && i2.featured) return 1
-    return i2Date - i1Date
-  })
-
-const base = 'https://www.asyncapi.com'
+const base = 'https://shapeup.franmendez.blog'
 const tracking = '?utm_source=rss';
 
 const feed = {}
@@ -31,41 +20,33 @@ const rss = {}
 rss['@version'] = '2.0'
 rss["@xmlns:atom"] = 'http://www.w3.org/2005/Atom'
 rss.channel = {}
-rss.channel.title = title
+rss.channel.title = 'Fran Mendez Shape Up RSS Feed'
 rss.channel.link = `${base}/rss.xml`
 rss.channel["atom:link"] = {}
 rss.channel["atom:link"]["@rel"] = 'self'
 rss.channel["atom:link"]["@href"] = rss.channel.link
 rss.channel["atom:link"]["@type"] = 'application/rss+xml'
-rss.channel.description = desc
+rss.channel.description = 'Fran Mendez Shape Up'
 rss.channel.language = 'en-gb';
-rss.channel.copyright = 'Made with :love: by the AsyncAPI Initiative.';
-rss.channel.webMaster = 'info@asyncapi.io (AsyncAPI Initiative)'
+rss.channel.copyright = 'Made with :love: by Fran Mendez.';
+rss.channel.webMaster = 'fmvilas@gmail.com (Fran Mendez)'
 rss.channel.pubDate = new Date().toUTCString()
 rss.channel.generator = 'next.js'
 rss.channel.item = []
 
-for (let post of posts) {
-  const link = `${base}${post.slug}${tracking}`;
-  const item = { title: post.title, description: clean(post.excerpt), link, category: type, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(post.date).toUTCString() }
-  if (post.cover) {
-    const enclosure = {};
-    enclosure["@url"] = base + post.cover;
-    enclosure["@length"] = 15026; // dummy value, anything works
-    enclosure["@type"] = 'image/jpeg';
-    if (typeof enclosure["@url"] === 'string') {
-      let tmp = enclosure["@url"].toLowerCase();
-      if (tmp.indexOf('.png') >= 0) enclosure["@type"] = 'image/png';
-      if (tmp.indexOf('.svg') >= 0) enclosure["@type"] = 'image/svg+xml';
-      if (tmp.indexOf('.webp') >= 0) enclosure["@type"] = 'image/webp';
-    }
-    item.enclosure = enclosure;
-  }
+for (let scope of data.scopes) {
+  const link = `${base}/cycles/${scope.cycle}${tracking}`;
+  const item = { title: scope.title, description: 'Scope added', link, category: data.bets.find(bet => bet.url === scope.bet).title, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(scope.createdAt).toUTCString() }
   rss.channel.item.push(item)
+
+  for (let historyItem of scope.progress.history) {
+    const item = { title: `${historyItem.percentage}% — ${historyItem.status}`, link, category: data.bets.find(bet => bet.url === scope.bet).title, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(historyItem.createdAt).toUTCString() }
+    rss.channel.item.push(item)
+  }
 }
 
 feed.rss = rss
 
 const xml = json2xml.getXml(feed, '@', '', 2)
-fs.writeFileSync(`./public/${outputPath}`, xml, 'utf8')
+fs.writeFileSync(`./public/rss.xml`, xml, 'utf8')
 

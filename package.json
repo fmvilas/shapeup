@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/build-data.js && next dev",
-    "build": "node scripts/build-data.js && next build"
+    "dev": "node scripts/build-data.js && node scripts/build-rss && next dev",
+    "build": "node scripts/build-data.js && node scripts/build-rss && next build"
   },
   "dependencies": {
     "@octokit/graphql": "^4.5.7",
