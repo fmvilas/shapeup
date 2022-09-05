@@ -34,15 +34,16 @@ rss.channel.pubDate = new Date().toUTCString()
 rss.channel.generator = 'next.js'
 rss.channel.item = []
 
-for (let scope of data.scopes) {
+for (let scope of data.scopes.sort((scope1, scope2) => new Date(scope2.createdAt) - new Date(scope1.createdAt))) {
   const link = `${base}/cycles/${scope.cycle}${tracking}`;
-  const item = { title: scope.title, description: 'Scope added', link, category: data.bets.find(bet => bet.url === scope.bet).title, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(scope.createdAt).toUTCString() }
-  rss.channel.item.push(item)
 
-  for (let historyItem of scope.progress.history) {
-    const item = { title: `${historyItem.percentage}% — ${historyItem.status}`, link, category: data.bets.find(bet => bet.url === scope.bet).title, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(historyItem.createdAt).toUTCString() }
+  for (let historyItem of scope.progress.history.sort((item1, item2) => new Date(item2.createdAt) - new Date(item1.createdAt))) {
+    const item = { title: `${historyItem.percentage}% | ${scope.title}`, description: historyItem.status, link, category: data.bets.find(bet => bet.url === scope.bet).title, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(historyItem.createdAt).toUTCString() }
     rss.channel.item.push(item)
   }
+
+  const item = { title: scope.title, description: 'Scope added', link, category: data.bets.find(bet => bet.url === scope.bet).title, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(scope.createdAt).toUTCString() }
+  rss.channel.item.push(item)
 }
 
 feed.rss = rss
