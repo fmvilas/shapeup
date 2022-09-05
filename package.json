@@ -12,6 +12,7 @@
     "@tailwindcss/ui": "^0.6.2",
     "autoprefixer": "^10.0.4",
     "dotenv": "^8.2.0",
+    "jgexml": "^0.4.4",
     "linear-scale": "0.0.3",
     "luxon": "^1.25.0",
     "nearest-color": "^0.4.4",
