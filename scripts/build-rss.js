@@ -46,6 +46,13 @@ for (let scope of data.scopes.sort((scope1, scope2) => new Date(scope2.createdAt
   rss.channel.item.push(item)
 }
 
+for (let bet of data.bets.sort((bet1, bet2) => new Date(bet2.createdAt) - new Date(bet1.createdAt))) {
+  const link = `${base}/cycles/${bet.cycle}${tracking}`;
+  const item = { title: bet.title, description: 'Bet added', link, category: bet.title, guid: { '@isPermaLink': true, '': link }, pubDate: new Date(bet.createdAt).toUTCString() }
+  rss.channel.item.push(item)
+}
+
+
 feed.rss = rss
 
 const xml = json2xml.getXml(feed, '@', '', 2)
