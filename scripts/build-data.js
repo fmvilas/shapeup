@@ -139,6 +139,8 @@ async function start () {
         cycleNode = cycles.find(cycle => cycle.id === cycleNode.iterationId)
       }
 
+      const kind = item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Kind')?.node.name
+
       return {
         title: item.node.content.title,
         url: item.node.content.url,
@@ -147,14 +149,14 @@ async function start () {
         closedAt: item.node.content.closedAt,
         author: item.node.content.author,
         bet: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Bet')?.node.text,
-        kind: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Kind')?.node.name,
+        kind,
         appetite: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Appetite')?.node.name,
         cycle: cycleNode.id,
-        progress: {
+        progress: kind === 'Scope' ? {
           issue_number: item.node.content.number,
           percentage: item.node.content.closed === true ? 100 : getCurrentPercentage(item.node.content.comments.edges.map(edge => edge.node.bodyText)),
           history: getHistory(item.node.content),
-        }
+        } : undefined
       }
     })
     
