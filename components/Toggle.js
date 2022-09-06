@@ -22,7 +22,7 @@ export default function Toggle({
   }
 
   return (
-    <span role="checkbox" title={disabled ? null : toggled ? 'Show' : 'Hide'} aria-disabled={disabled} onClick={onClickToggle} tabIndex="0" aria-checked="false" className={`${isToggled && !disabled ? 'text-gray-500' : 'text-gray-200'} ${disabled ? 'opacity-50' : 'cursor-pointer'} ${className} relative inline-flex flex-shrink-0 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline`}>
+    <span role="checkbox" title={disabled ? null : toggled ? 'Hide' : 'Show'} aria-disabled={disabled} onClick={onClickToggle} tabIndex="0" aria-checked="false" className={`${isToggled && !disabled ? 'text-gray-500' : 'text-gray-200'} ${disabled ? 'opacity-50' : 'cursor-pointer'} ${className} relative inline-flex flex-shrink-0 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline`}>
       <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
       {
         isToggled ? (
