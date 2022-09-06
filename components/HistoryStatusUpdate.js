@@ -27,8 +27,6 @@ export default function HistoryStatusUpdate ({ statusUpdate, className = '' }) {
     return 'text-green-500'
   }
 
-  const mark = '```\nconst a = 0;\n````\n'
-
   return (
     <div className={`${className}`}>
       <div className="flex">
@@ -45,6 +43,11 @@ export default function HistoryStatusUpdate ({ statusUpdate, className = '' }) {
             <span title={fullDateTime()}>
               {lastDate()}
             </span>
+            {
+              statusUpdate.progress.createdAt !== statusUpdate.progress.updatedAt && (
+                <span className="text-gray-400 ml-2">(edited)</span>
+              )
+            }
           </div>
         </div>
       </div>
