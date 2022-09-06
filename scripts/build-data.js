@@ -64,6 +64,45 @@ async function start () {
                       title
                       url
                       number
+                      closed
+                      closedAt
+                      createdAt
+                      author {
+                        login
+                        avatarUrl
+                      }
+                      comments(last: 100) {
+                        edges {
+                          node {
+                            body
+                            bodyText
+                            createdAt
+                            updatedAt
+                            url
+                            author {
+                              avatarUrl(size: 100)
+                              ... on User {
+                                name
+                                url
+                              }
+                            }
+                          }
+                        }
+                      }
+                      timelineItems(last: 100) {
+                        nodes {
+                          ... on ClosedEvent {
+                            url
+                            actor {
+                              avatarUrl(size: 100)
+                              ... on User {
+                                name
+                                url
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                   fieldValues(first: 100) {
