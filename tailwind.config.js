@@ -3,7 +3,9 @@ const colors = require('tailwindcss/colors')
 module.exports = {
   purge: ['./components/**/*.{js,ts,jsx,tsx}', './pages/**/*.{js,ts,jsx,tsx}'],
   safelist: [
-    'opacity-50'
+    'opacity-50',
+    'rounded',
+    'py-0.5'
   ],
   plugins: [
     require('@tailwindcss/typography'),
