@@ -48,7 +48,9 @@ async function start () {
                       timelineItems(last: 100) {
                         nodes {
                           ... on ClosedEvent {
+                            __typename
                             url
+                            stateReason
                             actor {
                               avatarUrl(size: 100)
                               ... on User {
@@ -92,7 +94,9 @@ async function start () {
                       timelineItems(last: 100) {
                         nodes {
                           ... on ClosedEvent {
+                            __typename
                             url
+                            stateReason
                             actor {
                               avatarUrl(size: 100)
                               ... on User {
@@ -180,6 +184,7 @@ async function start () {
       }
 
       const kind = item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Kind')?.node.name
+      const history = getHistory(item.node.content)
 
       return {
         title: item.node.content.title,
@@ -194,9 +199,11 @@ async function start () {
         appetite: item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Appetite')?.node.name,
         cycle: cycleNode.id,
         progress: kind === 'Scope' ? {
-          issue_number: item.node.content.number,
           percentage: item.node.content.closed === true ? 100 : getCurrentPercentage(item.node.content.comments.edges.map(edge => edge.node.bodyText)),
-          history: getHistory(item.node.content),
+          history,
+          notPlanned: getLatestCloseState(history) === 'NOT_PLANNED',
+          completed: getLatestCloseState(history) === 'COMPLETED',
+          closed: item.node.content.closed === true,
         } : undefined
       }
     })
@@ -216,6 +223,11 @@ async function start () {
   } catch (e) {
     console.error(e)
   }
+}
+
+function getLatestCloseState(history) {
+  const closeStates = history.filter(hp => hp.closeReason !== undefined)
+  if (closeStates.length) return history[closeStates.length-1].closeReason
 }
 
 function getCurrentPercentage(comments) {
@@ -252,15 +264,22 @@ function getStatus(comment = '') {
 function getHistory(scope) {
   const historyPoints = scope.comments.edges.map(edge => getHistoryPoint(edge.node)).filter(Boolean)
   if (scope.closed) {
-    const closedEvent = scope.timelineItems.nodes.find(node => node.actor)
+    const closedEvents = scope.timelineItems.nodes.filter(node => node.__typename === 'ClosedEvent')
+    const closedEvent = closedEvents[closedEvents.length-1]
+    const completed = closedEvent.stateReason === 'COMPLETED'
+    const notPlanned = closedEvent.stateReason === 'NOT_PLANNED'
     historyPoints.push({
-      percentage: 100,
+      percentage: completed ? 100 : undefined,
       status: null,
       statusMarkdown: null,
       createdAt: scope.closedAt,
       updatedAt: scope.closedAt,
       author: closedEvent.actor,
       url: closedEvent.url,
+      closed: true,
+      closeReason: closedEvent.stateReason,
+      completed,
+      notPlanned,
     })
   }
 
