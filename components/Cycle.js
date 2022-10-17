@@ -21,7 +21,7 @@ export default function Cycle({ visibleCycle, inCycle, previousCycle, nextCycle,
     return new Date(h2.progress.updatedAt) - new Date(h1.progress.updatedAt)
   })
 
-  const isPastCycle = new Date(visibleCycle.due_on) < new Date()
+  const isPastCycle = new Date(visibleCycle.endDate) < new Date()
 
   return (
     <>
