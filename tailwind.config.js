@@ -7,6 +7,9 @@ module.exports = {
     'rounded',
     'py-0.5'
   ],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
   theme: {
     stroke: theme => ({
       'white': theme('colors.white'),
