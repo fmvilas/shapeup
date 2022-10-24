@@ -15,14 +15,14 @@ export default function Pitches({ pitches = [] }) {
               <a href={pitch.url} target="_blank" className="flex-1 flex flex-col py-4 bg-cover rounded-tl-lg rounded-tr-lg" style={generateJSXMeshGradient(5)}>
                 <span className="mt-6 p-4 text-gray-900 text-xl leading-normal font-normal backdrop-blur-sm bg-white/30">{pitch.title}</span>
                 <dl className="mt-1 flex-grow flex flex-col justify-between">
-                  { pitch.appetite && (
+                  { pitch.appetite ? (
                     <>
                       <dt className="sr-only">Appetite</dt>
                       <dd className="mt-3">
                         <span className="px-2 py-1 text-teal-800 text-xs leading-4 font-medium bg-teal-100 rounded-full">{pitch.appetite}</span>
                       </dd>
                     </>
-                  ) }
+                  ) : (<div className="flex-grow" />) }
                   <dt className="sr-only">Author avatar</dt>
                   <dd className="text-gray-700 text-sm leading-5 mt-6 mb-1">
                     <img className="inline w-10 h-10 shadow border-2 border-gray-600 bg-gray-300 rounded-full" src={pitch.author.avatarUrl} title={pitch.author.login}></img>
