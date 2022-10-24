@@ -3,13 +3,7 @@ import Pitches from './Pitches'
 import CycleDetails from './CycleDetails'
 import CycleHeader from './CycleHeader'
 
-export default function Cycle({ visibleCycle, inCycle, previousCycle, nextCycle, bets, pitches, selectedScopes }) {
-  function shouldShowPitches() {
-    if (!bets.length) return true
-    if (pitches.length) return true
-    return false
-  }
-
+export default function Cycle({ visibleCycle, inCycle, previousCycle, nextCycle, pitches, selectedScopes, shouldShowPitches }) {
   const history = (selectedScopes || []).map(scope => {
     return scope.progress.history.map(h => {
       return {
@@ -48,7 +42,7 @@ export default function Cycle({ visibleCycle, inCycle, previousCycle, nextCycle,
                           <Link href="/"><a className="inline-flex mx-1.5 text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">Go to the current cycle.</a></Link>
                         </span>
                       ) : (
-                        shouldShowPitches() ? (
+                        shouldShowPitches ? (
                           <span>This cycle hasn't started yet. I'm currently evaluating the pitches below and will soon decide which ones will make it to the cycle. Stay tuned!</span>
                           ) : (
                           <span>I have already placed my bets but <strong>this cycle hasn't started yet</strong>. Stay tuned!</span>
@@ -63,7 +57,7 @@ export default function Cycle({ visibleCycle, inCycle, previousCycle, nextCycle,
         )
       }
       {
-        shouldShowPitches() ?
+        shouldShowPitches ?
           (<Pitches pitches={pitches} />) :
           (<CycleDetails selectedScopes={selectedScopes} history={history} />)
       }

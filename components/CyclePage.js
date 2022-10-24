@@ -3,13 +3,12 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import stringToColor from 'string-to-color'
 import nearestColor from 'nearest-color'
-import Bet from './Bet'
-import Scope from './Scope'
 import colors from './colors'
 import data from '../data.json'
 import Header from './Header'
 import Footer from './Footer'
 import Cycle from './Cycle'
+import CycleSidebar from './CycleSidebar'
 
 export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCycle, availablePitches = [], availableBets = [], availableScopes = [], params }) {
   const router = useRouter()
@@ -47,6 +46,12 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
     }
   }
 
+  function shouldShowPitches() {
+    if (!availableBets.length) return true
+    if (availablePitches.length) return true
+    return false
+  }
+
   return (
     <>
       <Head>
@@ -58,52 +63,19 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
         <div className="max-w-screen-xl mx-auto py-16 px-4 sm:py-16 sm:px-6 lg:px-8">
           <Header />
 
-          <div className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-4">
-            <div>
-              <div className="lg:shadow lg:p-4">
-                <div className="pb-5 border-b border-gray-200 space-y-2">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Bets
-                  </h3>
-                  <p className="max-w-4xl text-sm leading-5 text-gray-500">Ideas I'm now <strong>committed</strong> to implement during this 6 weeks cycle.</p>
-                </div>
-
-                <div>
-                  {
-                    availableBets.map((bet, index) => (
-                      <Bet key={index} issue={bet} toggled={visibleBet && bet.url === visibleBet.url} disabled={availableBets.length === 1} className="mt-3" onChange={onBetChange} />
-                    ))
-                  }
-                  {
-                    !visibleBet && (
-                      <p className="italic text-sm text-gray-400 mt-4">No bets have been created yet.</p>
-                    )
-                  }
-                </div>
-
-                <div className="mt-8 pb-5 border-b border-gray-200 space-y-2">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    Scopes
-                  </h3>
-                  <p className="max-w-4xl text-sm leading-5 text-gray-500">
-                    Scopes are groups of related tasks.
-                  </p>
-                </div>
-
-                <div>
-                  {
-                    (visibleScopes || []).map((scope, index) => (
-                      <Scope key={index} issue={scope} toggled={!!selectedScopes.find(s => s.url === scope.url)} onChange={onScopeChange} className="mt-3" />
-                    ))
-                  }
-                  {
-                    !(visibleScopes || []).length && (
-                      <p className="italic text-sm text-gray-400 mt-4">No scopes have been created yet.</p>
-                    )
-                  }
-                </div>
+          <div className={`mt-16 ${!shouldShowPitches() && 'grid grid-cols-1 gap-6 lg:grid-cols-4'}`}>
+            { !shouldShowPitches() && (
+              <div>
+                <CycleSidebar
+                  availableBets={availableBets}
+                  visibleBet={visibleBet}
+                  onBetChange={onBetChange}
+                  availableScopes={availableScopes}
+                  selectedScopes={selectedScopes}
+                  onScopeChange={onScopeChange}
+                />
               </div>
-            </div>
+            ) }
             <div className="lg:col-span-3">
               <Cycle
                 visibleCycle={visibleCycle}
@@ -111,8 +83,8 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
                 previousCycle={previousCycle}
                 nextCycle={nextCycle}
                 pitches={availablePitches}
-                bets={availableBets}
                 selectedScopes={selectedScopes}
+                shouldShowPitches={shouldShowPitches()}
               />
             </div>
           </div>
