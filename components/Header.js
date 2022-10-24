@@ -15,9 +15,7 @@ export default function Header() {
             </h2>
           </a>
         </Link>
-        <p className="mt-5 text-xl leading-7 text-gray-500 prose prose-pink">
-          <div dangerouslySetInnerHTML={{ __html: config.tagline }} />
-        </p>
+        <p className="mt-5 text-xl leading-7 text-gray-500 prose prose-pink" dangerouslySetInnerHTML={{ __html: config.tagline }} />
       </div>
     </div>
   )
