@@ -136,14 +136,19 @@ function getVisibleCycleDetails(id) {
       inCycle = (startDate <= now && endDate >= now)
     }
   } else {
-    cycle = data.cycles.find(c => {
+    for (const c of data.cycles) {
       const startDate = new Date(c.startDate)
       const endDate = new Date(c.endDate)
       const now = new Date()
-      if (endDate < now) return false
-      if (startDate <= now && endDate >= now) inCycle = true
-      return c
-    })
+      cycle = c
+      if (startDate <= now && endDate >= now) {
+        inCycle = true
+        break
+      } else if (startDate > now) {
+        inCycle = false
+        break
+      }
+    }
   }
 
   return {

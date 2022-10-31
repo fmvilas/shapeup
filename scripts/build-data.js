@@ -167,7 +167,7 @@ async function start () {
     )
 
     const projectData = data.user.projectV2.items.edges
-    const cycles = []
+    let cycles = []
     const issues = projectData.map(item => {
       let cycleNode = item.node.fieldValues.edges.find(fv => fv.node.field?.name === 'Cycle')?.node
       if (!cycles.find(cycle => cycle.id === cycleNode.iterationId)) {
@@ -207,7 +207,10 @@ async function start () {
         } : undefined
       }
     })
-    
+
+    cycles = cycles.sort((c1, c2) => { // Sort cycles by startDate
+      return new Date(c1.startDate) - new Date(c2.startDate)
+    })
     const pitches = issues.filter(issue => issue.kind === 'Pitch')
     const bets = issues.filter(issue => issue.kind === 'Bet')
     const scopes = issues.filter(issue => issue.kind === 'Scope')
