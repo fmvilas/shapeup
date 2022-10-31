@@ -70,7 +70,7 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
                   availableBets={availableBets}
                   visibleBet={visibleBet}
                   onBetChange={onBetChange}
-                  availableScopes={availableScopes}
+                  visibleScopes={visibleScopes}
                   selectedScopes={selectedScopes}
                   onScopeChange={onScopeChange}
                 />
