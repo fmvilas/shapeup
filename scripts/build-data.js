@@ -45,7 +45,10 @@ async function start () {
                           }
                         }
                       }
-                      timelineItems(last: 100) {
+                      timelineItems(
+                        last: 100,
+                        itemTypes: CLOSED_EVENT
+                      ) {
                         nodes {
                           ... on ClosedEvent {
                             __typename
