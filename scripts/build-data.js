@@ -51,7 +51,6 @@ async function start () {
                       ) {
                         nodes {
                           ... on ClosedEvent {
-                            __typename
                             url
                             stateReason
                             actor {
