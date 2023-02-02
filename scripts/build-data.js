@@ -269,7 +269,7 @@ function getStatus(comment = '') {
 function getHistory(scope) {
   const historyPoints = scope.comments.edges.map(edge => getHistoryPoint(edge.node)).filter(Boolean)
   if (scope.closed) {
-    const closedEvents = scope.timelineItems.nodes.filter(node => node.__typename === 'ClosedEvent')
+    const closedEvents = scope.timelineItems.nodes
     const closedEvent = closedEvents[closedEvents.length-1]
     const completed = closedEvent.stateReason === 'COMPLETED'
     const notPlanned = closedEvent.stateReason === 'NOT_PLANNED'
