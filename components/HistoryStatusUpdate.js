@@ -31,9 +31,9 @@ export default function HistoryStatusUpdate ({ statusUpdate, className = '' }) {
     return (
       <>
         <div className="flex">
-          <img className="inline-block h-10 w-10 rounded-md" src={statusUpdate.progress.author.avatarUrl} title={statusUpdate.progress.author.name} />
+          <img className="inline-block h-10 w-10 rounded-md" src={statusUpdate.progress.author.avatarUrl} title={statusUpdate.progress.author.name || statusUpdate.progress.author.login} />
           <div className="ml-2 -mt-1">
-            <a href={statusUpdate.progress.author.url} target="_blank" className="text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">{statusUpdate.progress.author.name}</a>
+            <a href={statusUpdate.progress.author.url} target="_blank" className="text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">{statusUpdate.progress.author.name || statusUpdate.progress.author.login}</a>
             <div className="text-sm text-gray-500">
               Updated progress of
               <a href={statusUpdate.progress.url} target="_blank" className="inline-flex mx-1.5 text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">
@@ -63,9 +63,9 @@ export default function HistoryStatusUpdate ({ statusUpdate, className = '' }) {
     if (statusUpdate.progress.notPlanned) {
       return (
         <div className="flex">
-          <img className="inline-block h-10 w-10 rounded-md" src={statusUpdate.progress.author.avatarUrl} title={statusUpdate.progress.author.name} />
+          <img className="inline-block h-10 w-10 rounded-md" src={statusUpdate.progress.author.avatarUrl} title={statusUpdate.progress.author.name || statusUpdate.progress.author.login} />
           <div className="ml-2 -mt-1">
-            <a href={statusUpdate.progress.author.url} target="_blank" className="text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">{statusUpdate.progress.author.name}</a>
+            <a href={statusUpdate.progress.author.url} target="_blank" className="text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">{statusUpdate.progress.author.name || statusUpdate.progress.author.login}</a>
             <div className="text-sm text-gray-500">
               Closed
               <a href={statusUpdate.progress.url} target="_blank" className="inline-flex mx-1.5 text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">
@@ -89,9 +89,9 @@ export default function HistoryStatusUpdate ({ statusUpdate, className = '' }) {
 
     return (
       <div className="flex">
-        <img className="inline-block h-10 w-10 rounded-md" src={statusUpdate.progress.author.avatarUrl} title={statusUpdate.progress.author.name} />
+        <img className="inline-block h-10 w-10 rounded-md" src={statusUpdate.progress.author.avatarUrl} title={statusUpdate.progress.author.name || statusUpdate.progress.author.login} />
         <div className="ml-2 -mt-1">
-          <a href={statusUpdate.progress.author.url} target="_blank" className="text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">{statusUpdate.progress.author.name}</a>
+          <a href={statusUpdate.progress.author.url} target="_blank" className="text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">{statusUpdate.progress.author.name || statusUpdate.progress.author.login}</a>
           <div className="text-sm text-gray-500">
             Completed
             <a href={statusUpdate.progress.url} target="_blank" className="inline-flex mx-1.5 text-sm text-gray-900 font-medium hover:text-gray-600 transition ease-in-out duration-150">

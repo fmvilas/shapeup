@@ -55,6 +55,14 @@ async function start () {
                             stateReason
                             actor {
                               avatarUrl(size: 100)
+                              ... on Actor {
+                                login
+                                url
+                              }
+                              ... on Bot {
+                                login
+                                url
+                              }
                               ... on User {
                                 name
                                 url
@@ -93,7 +101,10 @@ async function start () {
                           }
                         }
                       }
-                      timelineItems(last: 100) {
+                      timelineItems(
+                        last: 100,
+                        itemTypes: CLOSED_EVENT
+                      ) {
                         nodes {
                           ... on ClosedEvent {
                             __typename
@@ -101,6 +112,14 @@ async function start () {
                             stateReason
                             actor {
                               avatarUrl(size: 100)
+                              ... on Actor {
+                                login
+                                url
+                              }
+                              ... on Bot {
+                                login
+                                url
+                              }
                               ... on User {
                                 name
                                 url
@@ -268,8 +287,8 @@ function getStatus(comment = '') {
 
 function getHistory(scope) {
   const historyPoints = scope.comments.edges.map(edge => getHistoryPoint(edge.node)).filter(Boolean)
-  if (scope.closed) {
-    const closedEvents = scope.timelineItems.nodes
+  const closedEvents = scope.timelineItems.nodes.filter(ce => ce.__typename === 'ClosedEvent')
+  if (scope.closed && closedEvents.length) {  
     const closedEvent = closedEvents[closedEvents.length-1]
     const completed = closedEvent.stateReason === 'COMPLETED'
     const notPlanned = closedEvent.stateReason === 'NOT_PLANNED'
