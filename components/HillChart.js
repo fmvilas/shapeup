@@ -10,6 +10,7 @@ export default function HillChart({ scopes = [] }) {
       y,
       color: scope.color,
       text: scope.title,
+      url: scope.url,
       classNames: scope.progress.notPlanned ? 'animate-pulse' : ''
     }
   })
@@ -43,7 +44,17 @@ export default function HillChart({ scopes = [] }) {
         <g>
           {
             dots.map((dot, index) => (
-              <circle key={index} title={dot.text} fill={dot.color} className={`stroke-white ${dot.classNames}`} r="10" cx={dot.x} cy={dot.y} />
+              <a href={dot.url} target="_blank">
+                <title>{dot.text}</title>
+                <circle
+                  key={index}
+                  fill={dot.color}
+                  className={`stroke-white cursor-pointer ${dot.classNames}`}
+                  r="10"
+                  cx={dot.x}
+                  cy={dot.y}
+                />
+              </a>
             ))
           }
         </g>

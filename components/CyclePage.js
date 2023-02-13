@@ -1,8 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import stringToColor from 'string-to-color'
-import nearestColor from 'nearest-color'
 import colors from './colors'
 import data from '../data.json'
 import Header from './Header'
@@ -109,9 +107,9 @@ export async function getServerSideProps({ params = {} }) {
 
   data.availablePitches = data.pitches.filter(p => p.cycle === data.visibleCycle.id)
   data.availableBets = data.bets.filter(b => b.cycle === data.visibleCycle.id)
-
-  data.availableScopes = data.scopes.map(scope => {
-    scope.color = nearestColor.from(colors)(stringToColor(scope.url.replace('https://github.com/', '')))
+  
+  data.availableScopes = data.scopes.filter(s => s.cycle === cycle.id).map((scope, scopeIndex) => {
+    scope.color = colors[scopeIndex % colors.length] // If colorIndex is above colors.length, start over from the beginning
     return scope
   })
 
