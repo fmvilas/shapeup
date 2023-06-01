@@ -1,6 +1,7 @@
 const fs = require('fs')
 const json2xml = require('jgexml/json2xml')
 const data = require('../data.json')
+const config = require('../shapeup.config')
 
 const base = 'https://shapeup.franmendez.blog'
 const tracking = '?utm_source=rss';
@@ -10,16 +11,16 @@ const rss = {}
 rss['@version'] = '2.0'
 rss["@xmlns:atom"] = 'http://www.w3.org/2005/Atom'
 rss.channel = {}
-rss.channel.title = 'Fran Mendez Shape Up RSS Feed'
+rss.channel.title = `${config.fullname} Shape Up RSS Feed`
 rss.channel.link = `${base}/rss.xml`
 rss.channel["atom:link"] = {}
 rss.channel["atom:link"]["@rel"] = 'self'
 rss.channel["atom:link"]["@href"] = rss.channel.link
 rss.channel["atom:link"]["@type"] = 'application/rss+xml'
-rss.channel.description = 'Fran Mendez Shape Up'
+rss.channel.description = `${config.fullname} Shape Up`
 rss.channel.language = 'en-gb';
 rss.channel.copyright = 'Made with :love: by Fran Mendez.';
-rss.channel.webMaster = 'fmvilas@gmail.com (Fran Mendez)'
+rss.channel.webMaster = `${config.email} (${config.fullname})`
 rss.channel.pubDate = new Date().toUTCString()
 rss.channel.generator = 'next.js'
 rss.channel.item = []
