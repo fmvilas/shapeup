@@ -1,4 +1,4 @@
-import CyclePage, { getServerSideProps as getServerSidePropsFunction } from '../../components/CyclePage'
+import CyclePage, { getServerSideProps as getServerSidePropsFunction } from '@/components/CyclePage'
 
 export default function Cycle(props) {
   return (
