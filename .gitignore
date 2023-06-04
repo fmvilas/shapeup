@@ -34,3 +34,4 @@ yarn-error.log*
 data.json
 public/rss.xml
 public/logo.svg
+shapeup.config.js
