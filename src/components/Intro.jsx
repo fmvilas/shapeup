@@ -21,7 +21,7 @@ export function Intro() {
       <p className="mt-4 text-sm/6 text-gray-300">
         Convert your GitHub Project into Shape Up one. Visualize the progress of your team while keeping your operations on GitHub.
       </p>
-      <a href="https://github.com/login/oauth/authorize?client_id=2aebc9aab0164350d411&redirect_uri=https://shapeup.fmvilas.me/api/auth/github_callback&scopes=public_repo,read:project,read:user" className="inline-flex flex-row align-middle mt-8 px-5 py-4 border-sky-700 border rounded-lg hover:border-sky-950 hover:bg-sky-950">
+      <a href="https://github.com/login/oauth/authorize?client_id=2aebc9aab0164350d411&redirect_uri=https://shapeup.fmvilas.me/api/auth/callback/github&scopes=public_repo,read:project,read:user" className="inline-flex flex-row align-middle mt-8 px-5 py-4 border-sky-700 border rounded-lg hover:border-sky-950 hover:bg-sky-950">
         <GitHubIcon className="w-6 inline-block mr-4" />
         Sign in using GitHub
       </a>
