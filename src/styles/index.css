@@ -1,6 +1,33 @@
+/* @font-face {
+  font-family: 'Inter';
+  font-weight: 100 900;
+  font-display: block;
+  font-style: normal;
+  font-named-instance: 'Regular';
+  src: url('/fonts/Inter-roman.var.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-weight: 100 900;
+  font-display: block;
+  font-style: italic;
+  font-named-instance: 'Italic';
+  src: url('/fonts/Inter-italic.var.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Mona Sans';
+  font-weight: 200 900;
+  font-display: block;
+  font-style: normal;
+  font-stretch: 75% 125%;
+  src: url('/fonts/Mona-Sans.var.woff2') format('woff2');
+} */
+
 @tailwind base;
 
 /* Write your own custom base styles here */
+
+/* @import './typography.css'; */
 
 /* Start purging... */
 @tailwind components;
@@ -11,6 +38,12 @@
 /* Stop purging. */
 
 /* Your own custom utilities */
+
+#__next {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+}
 
 .shapeup-animated-gradient {
   background: linear-gradient(230deg, #e74694, #4b79cf, #4bc5cf, #4b79cf, #e74694);

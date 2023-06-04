@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import config from '../shapeup.config'
+import config from '../../shapeup.config'
 
 export default function Header() {
   return (
@@ -9,11 +9,9 @@ export default function Header() {
           <img src="/logo.svg" className="h-7 mb-4" />
         </a>
         <Link href="/">
-          <a>
-            <h2 className="text-4xl leading-10 font-extrabold text-gray-900 sm:text-5xl sm:leading-none sm:tracking-tight lg:text-6xl">
-              <span className="shapeup-animated-gradient">Shape Up</span> 🏋️‍♀️
-            </h2>
-          </a>
+          <h2 className="text-4xl leading-10 font-extrabold text-gray-900 sm:text-5xl sm:leading-none sm:tracking-tight lg:text-6xl">
+            <span className="shapeup-animated-gradient">Shape Up</span> 🏋️‍♀️
+          </h2>
         </Link>
         <p className="mt-5 text-xl leading-7 text-gray-500 prose prose-pink" dangerouslySetInnerHTML={{ __html: config.tagline }} />
       </div>

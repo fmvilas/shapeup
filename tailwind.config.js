@@ -1,14 +1,13 @@
 const colors = require('tailwindcss/colors')
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
-  content: ['./components/**/*.{js,ts,jsx,tsx}', './pages/**/*.{js,ts,jsx,tsx}'],
+  content: ['./{src,mdx}/**/*.{js,mjs,jsx,mdx}'],
+  darkMode: 'class',
   safelist: [
     'opacity-50',
     'rounded',
     'py-0.5'
-  ],
-  plugins: [
-    require('@tailwindcss/typography'),
   ],
   theme: {
     stroke: theme => ({
@@ -25,7 +24,19 @@ module.exports = {
       },
       height: {
         100: '25rem'
-      }
+      },
+      fontSize: {
+        '2xs': '.6875rem',
+      },
+      fontFamily: {
+        sans: ['Inter', ...defaultTheme.fontFamily.sans],
+        display: ['Mona Sans', ...defaultTheme.fontFamily.sans],
+      },
+      opacity: {
+        2.5: '0.025',
+        7.5: '0.075',
+        15: '0.15',
+      },
     }
   },
   variants: {
