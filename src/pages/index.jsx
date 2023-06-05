@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { SessionProvider } from 'next-auth/react'
 
 import { Intro, IntroFooter } from '@/components/Intro'
 
@@ -89,18 +90,20 @@ function FixedSidebar({ main, footer }) {
 
 export default function Home() {
   const { data: session } = useSession()
-  console.log(session)
+  console.log(`email`, session.user.email)
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex flex-row flex-1 w-full">
-        <FixedSidebar main={<Intro />} footer={<IntroFooter />} />
-        <div className="relative flex-1">
-          <main className="space-y-20 py-20 sm:space-y-32 sm:py-32 lg:pl-32">
-            Testing
-          </main>
+    <SessionProvider session={session}>
+      <div className="flex flex-col flex-1">
+        <div className="flex flex-row flex-1 w-full">
+          <FixedSidebar main={<Intro />} footer={<IntroFooter />} />
+          <div className="relative flex-1">
+            <main className="space-y-20 py-20 sm:space-y-32 sm:py-32 lg:pl-32">
+              Testing
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </SessionProvider>
   )
 }
