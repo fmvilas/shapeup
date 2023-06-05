@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/build-data.js && node scripts/build-rss && next dev",
-    "build": "node scripts/build-data.js && node scripts/build-rss && next build"
+    "build": "node scripts/build-data.js && node scripts/build-rss && next build",
+    "cli": "node cli/config.js"
   },
   "dependencies": {
     "@mdx-js/loader": "^2.3.0",
@@ -16,6 +17,9 @@
     "dotenv": "^8.2.0",
     "feed": "^4.2.2",
     "focus-visible": "^5.2.0",
+    "commander": "^10.0.1",
+    "dotenv": "^8.2.0",
+    "inquirer": "^8.2.5",
     "jgexml": "^0.4.4",
     "linear-scale": "0.0.3",
     "luxon": "^1.25.0",

@@ -13,13 +13,12 @@ First, go to your Github profile and create a new Project. Then go to Project se
 
 You can now go to your project and start adding bets, pitches, scopes, etc.
 
-Once you got your project setup, go to the `shapeup.config.js` file and replace the `owner` (your Github username) and `projectNumber` (the ID of your project) values with your own ones.
-
-Right after that, create a file called `.env.local` and add the following line:
+Once you got your project setup 
 
 ```
-GITHUB_TOKEN=[your-github-token]
+npm run cli init
 ```
+This will create `shapeup.config.js` file and generate  `.env.local` that will contains your `GITHUB_TOKEN`
 
 > You can create a new personal token [here](https://github.com/settings/tokens). Make sure it has, at least, the following scopes: `public_repo`, `read:project`, `read:user`.
 

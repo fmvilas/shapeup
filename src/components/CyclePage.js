@@ -53,7 +53,7 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
   return (
     <>
       <Head>
-        <title>AsyncAPI - Shape Up Dashboard</title>
+        <title>Shape Up Dashboard</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
