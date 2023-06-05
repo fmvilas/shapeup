@@ -10,7 +10,7 @@ export const authOptions = {
   ],
   callbacks: {
     async jwt(params) {
-      const { token, user } = params
+      let { token, user } = params
       console.log('>>>', params)
       if (user) {
         token = { accessToken: token.access_token }
