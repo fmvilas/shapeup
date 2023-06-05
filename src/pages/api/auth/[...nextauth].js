@@ -9,15 +9,18 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt(params) {
+      const { token, user } = params
+      console.log('>>>', params)
       if (user) {
         token = { accessToken: token.access_token }
       }
   
       return token
     },
-    async session({ session, user, token }) {
-      console.log('-->', token)
+    async session(params) {
+      const { session, user, token } = params
+      console.log('-->', params)
       session.accessToken = token.accessToken
       session.user.id = token.id
       return session
