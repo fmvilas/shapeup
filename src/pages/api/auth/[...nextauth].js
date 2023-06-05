@@ -10,8 +10,10 @@ export const authOptions = {
   ],
   callbacks: {
     async jwt(token, user) {
+      console.log('token', token)
+      console.log('user', user)
       if (user) {
-          token = { accessToken: user.accessToken }
+        token = { accessToken: user.accessToken }
       }
   
       return token
