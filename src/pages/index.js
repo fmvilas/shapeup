@@ -2,6 +2,7 @@ import { useId } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 
 import { Intro, IntroFooter } from '@/components/Intro'
+import { useRouter } from 'next/router'
 
 function Timeline() {
   let id = useId()
@@ -88,8 +89,12 @@ function FixedSidebar({ main, footer }) {
 }
 
 export default function Home() {
-  const { data: session } = useSession()
-  console.log(session)
+  const { data: session, status } = useSession()
+  
+  if (status === 'authenticated') {
+    const router = useRouter()
+    router.replace('/cycles')
+  }
 
   return (
     <div className="flex flex-col flex-1">

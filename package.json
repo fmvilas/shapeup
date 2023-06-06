@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/build-data.js && node scripts/build-rss && next dev",
+    "dev": "next dev",
     "build": "node scripts/build-data.js && node scripts/build-rss && next build"
   },
   "dependencies": {
@@ -38,11 +38,13 @@
     "remark-rehype-wrap": "^0.0.2",
     "remark-unwrap-images": "^3.0.1",
     "shiki": "^0.14.1",
+    "swr": "^2.1.5",
     "tailwindcss": "^3.3.0",
     "unist-util-visit": "^4.1.2"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^4.36.1",
+    "@tailwindcss/typography": "^0.5.9",
     "eslint": "8.26.0",
     "eslint-config-next": "13.0.2",
     "prettier": "^2.8.7",

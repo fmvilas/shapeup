@@ -1,8 +1,11 @@
 import Link from "next/link"
 
-export function Logo({ size = 'l' }) {
+export function Logo({ size = 'l', gradient = true }) {
   let sizeClassNames
   switch (size) {
+    case 's':
+      sizeClassNames = 'text-xl leading-10 sm:text-2xl sm:leading-none sm:tracking-tight lg:text-xl'
+      break;
     case 'm':
       sizeClassNames = 'text-xl leading-10 sm:text-2xl sm:leading-none sm:tracking-tight lg:text-3xl'
       break;
@@ -13,8 +16,8 @@ export function Logo({ size = 'l' }) {
   }
   return (
     <Link href="/">
-      <div className={`font-extrabold text-gray-900 ${sizeClassNames}`}>
-        <span className="shapeup-animated-gradient">Shape Up</span> 🏋️‍♀️
+      <div className={`font-extrabold text-gray-700 ${sizeClassNames}`}>
+      🏋️‍♀️ <span className={gradient ? 'shapeup-animated-gradient' : ''}>Shape It!</span>
       </div>
     </Link>
   )

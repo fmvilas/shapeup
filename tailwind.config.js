@@ -42,4 +42,7 @@ module.exports = {
   variants: {
     margin: ['responsive', 'hover', 'focus', 'group-hover'],
   },
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }

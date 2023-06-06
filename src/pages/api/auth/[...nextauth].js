@@ -13,6 +13,7 @@ export const authOptions = {
       if (account) {
         token.accessToken = account.access_token
         token.id = profile.id
+        token.username = profile.login
       }
       return token
     },
@@ -20,6 +21,7 @@ export const authOptions = {
       // Send properties to the client, like an access_token and user id from a provider.
       session.accessToken = token.accessToken
       session.user.id = token.id
+      session.user.username = token.username
       return session
     },
   }
