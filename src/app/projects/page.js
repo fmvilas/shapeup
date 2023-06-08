@@ -133,6 +133,8 @@ export default async function Projects() {
   ).flat()
   const allProjects = [userProjects, orgProjects].flat()
 
+  console.log(JSON.stringify(allProjects, null, 2))
+
   return (
     <>
       <Head>
