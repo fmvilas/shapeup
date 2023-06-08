@@ -108,6 +108,7 @@ export default async function Projects() {
       }
     )
   } catch (e) {
+    console.error(e)
     if (!e.data) {
       return (
         <div>There was an error trying to fetch GitHub data.</div>
