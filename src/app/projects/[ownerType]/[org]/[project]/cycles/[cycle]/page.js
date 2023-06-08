@@ -47,6 +47,7 @@ export async function prepareData(params) {
         ${userOrOrganization}(login: $owner) {
           projectV2(number: $projectNumber) {
             title
+            url
             items(first: 100) {
               nodes {
                 content {
@@ -334,6 +335,7 @@ export async function prepareData(params) {
 
   return {
     project: {
+      githubUrl: responseData[userOrOrganization].projectV2.url,
       title: responseData[userOrOrganization].projectV2.title,
       org: params.org,
       ownerType: params.ownerType,
