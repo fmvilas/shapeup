@@ -1,12 +1,9 @@
-import { useId } from 'react'
-import { useSession, signIn, signOut } from 'next-auth/react'
-
 import { Intro, IntroFooter } from '@/components/Intro'
-import { useRouter } from 'next/router'
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
+import { authOptions } from './api/auth/[...nextauth]/route'
 
 function Timeline() {
-  let id = useId()
-
   return (
     <div className="pointer-events-none absolute inset-0 z-50 overflow-hidden lg:right-0 lg:min-w-[32rem] lg:overflow-visible">
       <svg
@@ -14,7 +11,7 @@ function Timeline() {
         aria-hidden="true"
       >
         <defs>
-          <pattern id={id} width="6" height="8" patternUnits="userSpaceOnUse">
+          <pattern id="timeline" width="6" height="8" patternUnits="userSpaceOnUse">
             <path
               d="M0 0H6M0 8H6"
               className="stroke-sky-900/10 dark:stroke-white/10 xl:stroke-white/10"
@@ -22,15 +19,13 @@ function Timeline() {
             />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill={`url(#${id})`} />
+        <rect width="100%" height="100%" fill="url(#timeline)" />
       </svg>
     </div>
   )
 }
 
 function Glow() {
-  let id = useId()
-
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden bg-gray-950 lg:right-0 lg:min-w-[32rem]">
       <svg
@@ -38,12 +33,12 @@ function Glow() {
         aria-hidden="true"
       >
         <defs>
-          <radialGradient id={`${id}-desktop`} cx="100%">
+          <radialGradient id="gradient-desktop" cx="100%">
             <stop offset="0%" stopColor="rgba(56, 189, 248, 0.3)" />
             <stop offset="53.95%" stopColor="rgba(0, 71, 255, 0.09)" />
             <stop offset="100%" stopColor="rgba(10, 14, 23, 0)" />
           </radialGradient>
-          <radialGradient id={`${id}-mobile`} cy="100%">
+          <radialGradient id="gradient-mobile" cy="100%">
             <stop offset="0%" stopColor="rgba(56, 189, 248, 0.3)" />
             <stop offset="53.95%" stopColor="rgba(0, 71, 255, 0.09)" />
             <stop offset="100%" stopColor="rgba(10, 14, 23, 0)" />
@@ -52,13 +47,13 @@ function Glow() {
         <rect
           width="100%"
           height="100%"
-          fill={`url(#${id}-desktop)`}
+          fill="url(#gradient-desktop)"
           className="hidden lg:block"
         />
         <rect
           width="100%"
           height="100%"
-          fill={`url(#${id}-mobile)`}
+          fill="url(#$gradient-mobile)"
           className="lg:hidden"
         />
       </svg>
@@ -88,12 +83,11 @@ function FixedSidebar({ main, footer }) {
   )
 }
 
-export default function Home() {
-  const { data: session, status } = useSession()
+export default async function Home() {
+  const session = await getServerSession(authOptions)
   
-  if (status === 'authenticated') {
-    const router = useRouter()
-    router.replace('/cycles')
+  if (session) {
+    return redirect('/projects')
   }
 
   return (

@@ -1,15 +1,12 @@
+'use client';
+
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import colors from './colors'
-import data from '@/../data.json'
 import Header from './Header'
-import Footer from './Footer'
 import Cycle from './Cycle'
 import CycleSidebar from './CycleSidebar'
 
-export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCycle, availablePitches = [], availableBets = [], availableScopes = [], params }) {
-  const router = useRouter()
+export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCycle, availablePitches = [], availableBets = [], availableScopes = [] }) {
   const [visibleBet, setVisibleBet] = useState(availableBets.find(bet => belongsToCycle(visibleCycle, bet)))
   const [visibleScopes, setVisibleScopes] = useState(availableScopes.filter(scope => belongsToBet(visibleBet, scope)))
   const [selectedScopes, setSelectedScopes] = useState(visibleScopes)
@@ -23,12 +20,6 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
   useEffect(() => {
     setVisibleBet(availableBets.find(bet => belongsToCycle(visibleCycle, bet)))
   }, [visibleCycle])
-
-  useEffect(() => {
-    if (!params || !params.id) {
-      router.replace(`/cycles/${visibleCycle.id}`)
-    }
-  }, [])
 
   function onBetChange({ issue, toggled }) {
     if (toggled) {
@@ -53,106 +44,42 @@ export default function CyclePage({ visibleCycle, previousCycle, nextCycle, inCy
   return (
     <>
       <Head>
-        <title>AsyncAPI - Shape Up Dashboard</title>
+        <title>Shape It! - Dashboard</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="bg-white">
-        <div className="max-w-screen-xl mx-auto py-16 px-4 sm:py-16 sm:px-6 lg:px-8">
-          <Header />
+        <Header />
 
-          <div className={`mt-16 ${!shouldShowPitches() && 'grid grid-cols-1 gap-6 lg:grid-cols-4'}`}>
-            { !shouldShowPitches() && (
-              <div>
-                <CycleSidebar
-                  availableBets={availableBets}
-                  visibleBet={visibleBet}
-                  onBetChange={onBetChange}
-                  visibleScopes={visibleScopes}
-                  selectedScopes={selectedScopes}
-                  onScopeChange={onScopeChange}
-                />
-              </div>
-            ) }
-            <div className="lg:col-span-3">
-              <Cycle
-                visibleCycle={visibleCycle}
-                inCycle={inCycle}
-                previousCycle={previousCycle}
-                nextCycle={nextCycle}
-                pitches={availablePitches}
+        <div className={`mt-16 ${!shouldShowPitches() && 'grid grid-cols-1 gap-6 lg:grid-cols-4'}`}>
+          { !shouldShowPitches() && (
+            <div>
+              <CycleSidebar
+                availableBets={availableBets}
+                visibleBet={visibleBet}
+                onBetChange={onBetChange}
+                visibleScopes={visibleScopes}
                 selectedScopes={selectedScopes}
-                shouldShowPitches={shouldShowPitches()}
+                onScopeChange={onScopeChange}
               />
             </div>
+          ) }
+          <div className="lg:col-span-3">
+            <Cycle
+              visibleCycle={visibleCycle}
+              inCycle={inCycle}
+              previousCycle={previousCycle}
+              nextCycle={nextCycle}
+              pitches={availablePitches}
+              selectedScopes={selectedScopes}
+              shouldShowPitches={shouldShowPitches()}
+            />
           </div>
-
         </div>
-      </div>
 
-      <Footer />
+      </div>
     </>
   )
-}
-
-export async function getServerSideProps({ params = {} }) {
-  const { cycle, inCycle } = getVisibleCycleDetails(params.id)
-  if (!cycle) return { notFound: true }
-  data.visibleCycle = cycle
-  data.inCycle = inCycle
-  
-  const visibleCycleIndex = data.cycles.findIndex(cycle => cycle.id === data.visibleCycle.id)
-  data.previousCycle = visibleCycleIndex > 0 ? data.cycles[visibleCycleIndex - 1] : null
-  data.nextCycle = visibleCycleIndex < data.cycles.length - 1 ? data.cycles[visibleCycleIndex + 1] : null
-
-  data.availablePitches = data.pitches.filter(p => p.cycle === data.visibleCycle.id)
-  data.availableBets = data.bets.filter(b => b.cycle === data.visibleCycle.id)
-  
-  data.availableScopes = data.scopes.filter(s => s.cycle === cycle.id).map((scope, scopeIndex) => {
-    scope.color = colors[scopeIndex % colors.length] // If colorIndex is above colors.length, start over from the beginning
-    return scope
-  })
-
-  return {
-    props: {
-      ...data,
-      params,
-    },
-  }
-}
-
-function getVisibleCycleDetails(id) {
-  let inCycle = false
-  let cycle
-
-  if (id) {
-    cycle = data.cycles.find(cycle => String(cycle.id) === id)
-    if (cycle) {
-      const startDate = new Date(cycle.startDate)
-      const endDate = new Date(cycle.endDate)
-      const now = new Date()
-      inCycle = (startDate <= now && endDate >= now)
-    }
-  } else {
-    for (const c of data.cycles) {
-      const startDate = new Date(c.startDate)
-      const endDate = new Date(c.endDate)
-      const now = new Date()
-      cycle = c
-      if (startDate <= now && endDate >= now) {
-        inCycle = true
-        break
-      } else if (startDate > now) {
-        inCycle = false
-        break
-      }
-    }
-  }
-
-  return {
-    cycle,
-    inCycle,
-  }
 }
 
 function belongsToBet(bet, scope) {

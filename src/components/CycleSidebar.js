@@ -15,7 +15,7 @@ export default function ({
         <h3 className="text-lg leading-6 font-medium text-gray-900">
           Bets
         </h3>
-        <p className="max-w-4xl text-sm leading-5 text-gray-500">Ideas I'm now <strong>committed</strong> to implement during this 6 weeks cycle.</p>
+        <p className="max-w-4xl text-sm leading-5 text-gray-500">Ideas you're <strong>committed</strong> to implement during this cycle.</p>
       </div>
 
       <div>
@@ -36,7 +36,7 @@ export default function ({
           Scopes
         </h3>
         <p className="max-w-4xl text-sm leading-5 text-gray-500">
-          Scopes are groups of related tasks.
+          Subtasks to make the development of the bet easier.
         </p>
       </div>
 

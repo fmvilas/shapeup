@@ -6,6 +6,11 @@ export const authOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: 'read:user,user:email,read:org,project'
+        }
+      }
     }),
   ],
   callbacks: {
@@ -27,4 +32,5 @@ export const authOptions = {
   }
 }
 
-export default NextAuth(authOptions)
+const handler = NextAuth(authOptions)
+export { handler as GET, handler as POST }
