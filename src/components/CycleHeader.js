@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { DateTime } from 'luxon'
+import { useProjectDetails } from '@/contexts/ProjectDetails'
 
 export default function CycleHeader({ visibleCycle, inCycle, previousCycle, nextCycle, isPastCycle }) {
-  const dueOnDate = DateTime.fromISO(visibleCycle.endDate)
+  const dueOnDate = DateTime.fromISO(visibleCycle.endDate.toISOString())
   const remainingDays = Math.floor(dueOnDate.diffNow('days').toObject().days)
+  const { org, number: projectNumber, ownerType } = useProjectDetails()
 
   const previousCycleButton = (
     <div title={previousCycle && 'Go to the previous cycle'}>
@@ -44,7 +46,7 @@ export default function CycleHeader({ visibleCycle, inCycle, previousCycle, next
         <div className="flex">
           {
             !previousCycle ? previousCycleButton : (
-              <Link href={`/cycles/${previousCycle.id}`}>
+              <Link href={`/projects/${ownerType}/${org}/${projectNumber}/cycles/${previousCycle.id}`}>
                 {previousCycleButton}
               </Link>
             )
@@ -52,7 +54,7 @@ export default function CycleHeader({ visibleCycle, inCycle, previousCycle, next
           
           {
             !nextCycle ? nextCycleButton : (
-              <Link href={`/cycles/${nextCycle.id}`}>
+              <Link href={`/projects/${ownerType}/${org}/${projectNumber}/cycles/${nextCycle.id}`}>
                 {nextCycleButton}
               </Link>
             )
