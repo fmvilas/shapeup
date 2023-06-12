@@ -1,0 +1,52 @@
+name: Flag issues as scopes
+
+on:
+  issues:
+    types:
+      - edited
+
+jobs:
+  flag-issues-as-scopes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if issue description changed
+        id: check_changes
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const issueNumber = issue.number;
+            const projectId = 4; // Replace with the desired project number
+            const kind = 'Bet'; // Replace with the desired kind
+
+            const isIssueBelongsToProject = issue.project_card !== undefined && issue.project_card.project_id === projectId;
+            const isIssueKindBet = issue.labels.some(label => label.name === kind);
+
+            if (isIssueBelongsToProject && isIssueKindBet) {
+              const oldDescription = issue.changes.body ? issue.changes.body.from : '';
+              const newDescription = issue.body;
+
+              if (oldDescription !== newDescription) {
+                console.log('Issue description has changed.');
+                console.log('Old Description:', oldDescription);
+                console.log('New Description:', newDescription);
+
+                const scopeIndex = newDescription.indexOf('### Scope');
+                if (scopeIndex !== -1) {
+                  const scopeText = newDescription.slice(scopeIndex);
+                  const pattern = /- \[[x ]\] (\S+)/g;
+                  const tasks = scopeText.match(pattern);
+                  if (tasks && tasks.length > 0) {
+                    console.log('Tasks:');
+                    console.log(JSON.stringify(tasks));
+                  } else {
+                    console.log('No tasks found under the Scope section.');
+                  }
+                } else {
+                  console.log('Scope section not found in the description.');
+                }
+              } else {
+                console.log('Issue description did not change.');
+              }
+            }
