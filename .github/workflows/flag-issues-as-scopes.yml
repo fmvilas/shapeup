@@ -42,8 +42,9 @@ jobs:
                 const scopeIndex = newDescription.indexOf('### Scope');
                 if (scopeIndex !== -1) {
                   const scopeText = newDescription.slice(scopeIndex);
-                  const pattern = /- \[[x ]\] (\S+)/g;
-                  const tasks = scopeText.match(pattern);
+                  const pattern = /### Scope\s*\n([\s\S]*?)(?=###|$)/
+                  const match = scopeText.match(pattern);
+                  const tasks = match[1].trim().split('\n')
                   if (tasks && tasks.length > 0) {
                     console.log('Tasks:');
                     console.log(JSON.stringify(tasks));
