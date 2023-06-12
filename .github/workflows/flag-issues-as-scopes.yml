@@ -68,7 +68,7 @@ jobs:
         with:
           query: |
             mutation {
-              addProjectV2ItemById(input: {projectId: ${projectId}, contentId: ${issueNumber}}) {
+              addProjectV2ItemById(input: {projectId: $projectId, contentId: $issueNumber}) {
                 clientMutationId
               }
             }
