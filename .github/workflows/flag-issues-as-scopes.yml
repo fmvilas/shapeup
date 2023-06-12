@@ -69,6 +69,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const tasks = ${{ steps.extract-tasks.outputs.result }}
-            console.log(tasks)
+            if (tasks === '') {
+              console.log('No tasks to work with')
+              return 0
+            }
+            const tasksAsArray = tasks.split(',').map(Number)
+            for (const scope of tasksAsArray) {
+              console.log("Working with ", scope)
+            }
 
 
