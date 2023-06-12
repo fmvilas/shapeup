@@ -27,6 +27,7 @@ jobs:
 
             const isIssueBelongsToProject = issue.project_card !== undefined && issue.project_card.project_id === projectId;
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
+            console.log(`Issue Body`, issue.changes.body, `Current body`, issue.body);
             console.log(`isIssueBelongsToProject`, isIssueBelongsToProject, `isIssueKindBet`, isIssueKindBet)
             if (isIssueKindBet) {
               const oldDescription = issue.changes.body ? issue.changes.body.from : '';
