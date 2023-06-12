@@ -69,13 +69,31 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const tasks = ${{ steps.extract-tasks.outputs.result }}
+            const projectId = "4"
             if (tasks === '') {
               console.log('No tasks to work with')
               return 0
             }
             const tasksAsArray = tasks.split(',').map(Number)
+            const addIssueToProject = async (issueNumber, projectId) => {
+              const addToProjectMutation = `
+                mutation {
+                  addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
+                    clientMutationId
+                  }
+                }
+              `;
+              
+              try {
+                await github.graphql(addToProjectMutation);
+                console.log(`Added issue #${issueNumber} to project ${projectId}.`);
+              } catch (error) {
+                console.log(`Failed to add issue #${issueNumber} to project column:`, error);
+              }
+            };
             for (const scope of tasksAsArray) {
               console.log("Working with ", scope)
+              await addIssueToProject(scope, projectId)
             }
 
 
