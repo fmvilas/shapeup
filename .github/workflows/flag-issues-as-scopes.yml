@@ -21,16 +21,17 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issue = context.payload.issue;
+            const changes = contest.payload.changes;
             const issueNumber = issue.number;
             const projectId = 4; // Replace with the desired project number
             const kind = 'kind/bet'; // Replace with the desired kind
 
             const isIssueBelongsToProject = issue.project_card !== undefined && issue.project_card.project_id === projectId;
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
-            console.log(`Issue Body`, issue.changes.body, `Current body`, issue.body);
+            console.log(`Issue Chages`, changes.body, `Current body`, issue.body);
             console.log(`isIssueBelongsToProject`, isIssueBelongsToProject, `isIssueKindBet`, isIssueKindBet)
             if (isIssueKindBet) {
-              const oldDescription = issue.changes.body ? issue.changes.body.from : '';
+              const oldDescription = changes.body ? changes.body.from : '';
               const newDescription = issue.body;
 
               if (oldDescription !== newDescription) {
