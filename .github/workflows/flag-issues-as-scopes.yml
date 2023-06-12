@@ -62,33 +62,27 @@ jobs:
                 return ('')
               }
             }
-      - name: Add to Project beta
-        id: add-to-project-beta
-        uses: octokit/graphql-action@v2.2.1
-        with:
-          query: |
-            mutation {
-              addProjectV2ItemById(input: {projectId: $projectId, contentId: $issueNumber}) {
-                clientMutationId
-              }
-            }
-          projectId: 4
-          contentId: 7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Add to Project beta
+      #   id: add-to-project-beta
+      #   uses: octokit/graphql-action@v2.2.1
+      #   with:
+      #     query: |
+      #       mutation {
+      #         addProjectV2ItemById(input: {projectId: $projectId, contentId: $issueNumber}) {
+      #           clientMutationId
+      #         }
+      #       }
+      #     projectId: 4
+      #     contentId: 7
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add to project
         id: add-project
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { graphql } = require("@octokit/graphql");
             const tasks = ${{ steps.extract-tasks.outputs.result }}
-            const octokitGraphql = graphql.defaults({
-              headers: {
-                authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-              },
-            });
             const projectId = 4
             if (tasks === '') {
               console.log('No tasks to work with')
@@ -96,16 +90,14 @@ jobs:
             }
             const tasksAsArray = tasks.split(',').map(Number)
             const addIssueToProject = async (issueNumber, projectId) => {
-              const addToProjectMutation = `
-                mutation {
+              const addToProjectMutation = `mutation {
                   addProjectV2ItemById(input: {projectId: ${projectId}, contentId: ${issueNumber}}) {
                     clientMutationId
                   }
-                }
-              `;
+                }`;
               
               try {
-                await octokitGraphql(addToProjectMutation);
+                await github.graphql(addToProjectMutation);
                 console.log(`Added issue #${issueNumber} to project ${projectId}.`);
               } catch (error) {
                 console.log(`Failed to add issue #${issueNumber} to project column:`, error);
