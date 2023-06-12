@@ -21,7 +21,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issue = context.payload.issue;
-            const changes = contest.payload.changes;
+            const changes = context.payload.changes;
             const issueNumber = issue.number;
             const projectId = 4; // Replace with the desired project number
             const kind = 'kind/bet'; // Replace with the desired kind
