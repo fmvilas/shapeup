@@ -61,8 +61,8 @@ jobs:
                 console.log('Issue description did not change.');
               }
             }
-      - name: Test tasks
-        id: Add to project
+      - name: Add to project
+        id: add-to-project
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
