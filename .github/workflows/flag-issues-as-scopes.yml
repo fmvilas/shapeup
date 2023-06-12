@@ -23,11 +23,11 @@ jobs:
             const issue = context.payload.issue;
             const issueNumber = issue.number;
             const projectId = 4; // Replace with the desired project number
-            const kind = 'Bet'; // Replace with the desired kind
+            const kind = 'kind/bet'; // Replace with the desired kind
 
             const isIssueBelongsToProject = issue.project_card !== undefined && issue.project_card.project_id === projectId;
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
-
+            console.log(`isIssueBelongsToProject`, isIssueBelongsToProject, `isIssueKindBet`, isIssueKindBet)
             if (isIssueBelongsToProject && isIssueKindBet) {
               const oldDescription = issue.changes.body ? issue.changes.body.from : '';
               const newDescription = issue.body;
