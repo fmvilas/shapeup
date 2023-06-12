@@ -69,7 +69,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const tasks = ${{ steps.extract-tasks.outputs.result }}
-            const projectId = "4"
+            const projectId = 4
             if (tasks === '') {
               console.log('No tasks to work with')
               return 0
@@ -78,7 +78,7 @@ jobs:
             const addIssueToProject = async (issueNumber, projectId) => {
               const addToProjectMutation = `
                 mutation {
-                  addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
+                  addProjectV2ItemById(input: {projectId: ${projectId}, contentId: ${issueNumber}}) {
                     clientMutationId
                   }
                 }
