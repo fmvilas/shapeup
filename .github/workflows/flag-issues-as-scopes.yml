@@ -62,20 +62,20 @@ jobs:
                 return ('')
               }
             }
-      # - name: Add to Project beta
-      #   id: add-to-project-beta
-      #   uses: octokit/graphql-action@v2.2.1
-      #   with:
-      #     query: |
-      #       mutation {
-      #         addProjectV2ItemById(input: {projectId: $projectId, contentId: $issueNumber}) {
-      #           clientMutationId
-      #         }
-      #       }
-      #     projectId: 4
-      #     contentId: 7
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add to Project beta
+        id: add-to-project-beta
+        uses: octokit/graphql-action@v2.2.1
+        with:
+          query: |
+            mutation {
+              addProjectV2ItemById(input: {projectId: 4, contentId: 7}) {
+                clientMutationId
+              }
+            }
+          owner: ${{ github.event.repository.owner.name }}
+          repo: ${{ github.event.repository.name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add to project
         id: add-project
         uses: actions/github-script@v6
