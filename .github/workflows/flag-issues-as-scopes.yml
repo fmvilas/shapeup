@@ -59,3 +59,12 @@ jobs:
                 console.log('Issue description did not change.');
               }
             }
+      - name: Add to project
+        id: add-project
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const tasks = ${{ steps.extract-tasks.outputs.tasks }};
+            console.log(tasks)
+
