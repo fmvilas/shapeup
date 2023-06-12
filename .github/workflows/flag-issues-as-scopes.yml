@@ -68,7 +68,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const { graphql } = require("@octokit/graphql");
             const tasks = ${{ steps.extract-tasks.outputs.result }}
+            const octokitGraphql = graphql.defaults({
+              headers: {
+                authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+              },
+            });
             const projectId = 4
             if (tasks === '') {
               console.log('No tasks to work with')
@@ -85,7 +91,7 @@ jobs:
               `;
               
               try {
-                await github.graphql(addToProjectMutation);
+                await octokitGraphql(addToProjectMutation);
                 console.log(`Added issue #${issueNumber} to project ${projectId}.`);
               } catch (error) {
                 console.log(`Failed to add issue #${issueNumber} to project column:`, error);
