@@ -45,18 +45,22 @@ jobs:
                   const pattern = /### Scope\s*\n([\s\S]*?)(?=###|$)/
                   const match = scopeText.match(pattern);
                   const tasks = match[1].trim().split('\n');
-                  // echo "tasks=$tasks" >> $GITHUB_OUTPUT
+                    .map(task => task.match(/#(\d+)/)[1])
                   if (tasks && tasks.length > 0) {
                     console.log('Tasks:');
                     console.log(JSON.stringify(tasks));
+                    return (tasks.join(','))
                   } else {
                     console.log('No tasks found under the Scope section.');
+                    return ('')
                   }
                 } else {
                   console.log('Scope section not found in the description.');
+                  return ('')
                 }
               } else {
                 console.log('Issue description did not change.');
+                return ('')
               }
             }
       - name: Add to project
@@ -65,5 +69,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log("nothing")
+            const tasks = ${{ steps.extract-tasks.outputs.result }}
+            console.log(tasks)
+
 
