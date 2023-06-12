@@ -48,7 +48,6 @@ jobs:
                   if (tasks && tasks.length > 0) {
                     console.log('Tasks:');
                     console.log(JSON.stringify(tasks));
-                    echo "tasks=$tasks" >> $GITHUB_OUTPUT
                   } else {
                     console.log('No tasks found under the Scope section.');
                   }
