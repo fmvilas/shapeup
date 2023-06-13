@@ -54,8 +54,9 @@ jobs:
               issue: context.payload.issue.number
             }
             const result = await github.graphql(query, variables)
+            const d = ${{ steps.generate_token.outputs.token }}
             console.log(JSON.stringify(result))
-            console.log(${{ steps.generate_token.outputs.token }})
+            console.log(d)
             return result
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
