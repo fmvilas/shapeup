@@ -28,7 +28,11 @@ jobs:
           script: |
             const query = `query($owner: String!, $name: String!) { 
               user(login: $owner) {
+                name
                 repository(name: $name) {
+                  name
+                  hasProjectsEnabled
+                  viewerPermission
                   projectsV2(first: 2) {
                     nodes {
                       number
