@@ -199,7 +199,7 @@ jobs:
                 }
               };
               try {
-                await github.graphql(addToProjectMutation, variables);
+                await github.graphql(updateProjectMutation, variables);
                 console.log(`Added Bet URL to issue #${issueNumber}.`);
               } catch (error) {
                 console.log(`Failed to add Bet URL to issue #${issueNumber}`, error);
