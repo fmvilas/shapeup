@@ -162,6 +162,7 @@ jobs:
             const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
             const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
+            const BetValue = "https://github.com/Amzani/shapeup/issues/${issueNumber}"
 
 
             const addIssueToProject = async (issueNumber, projectId) => {
@@ -211,6 +212,9 @@ jobs:
                   let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0]?.id
                   if (!projectScopes.includes(project.id)) {
                     await addIssueToProject(scope.id, project.id)
+                  }
+                  if (scope.id && itemId && betFieldId) {
+                    await updateProjectFieldValue(project.id, itemId, betFieldId, {"text": BetValue})
                   }
                   console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
                 }
