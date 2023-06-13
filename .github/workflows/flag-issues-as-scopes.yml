@@ -24,19 +24,18 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: json
           script: |
-            const query = `query($owner: String!, $name: String!, $issue: Int!) { 
-                user(login: $owner) {
-                  repository(name: $name) {
-                    issue(number: $issue) {
-                      title
+            const query = `query($owner: String!, $name: String!) { 
+              user(login: $owner) {
+                repository(name: $name) {
+                  projectsV2(first: 2) {
+                    nodes {
                       number
-                      projectV2(number:4) {
-                        id
-                      }
+                      id
                     }
                   }
                 }
-              }`;
+              }
+            }`;
             const variables = {
               owner: context.repo.owner,
               name: context.repo.repo,
