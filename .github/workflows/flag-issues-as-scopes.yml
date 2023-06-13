@@ -32,22 +32,21 @@ jobs:
           github-token: ${{ secrets.ACCESS_TOKEN }}
           result-encoding: json
           script: |
-            const query = `query($owner: String!, $name: String!) { 
-              user(login: $owner) {
-                name
-                repository(name: $name) {
-                  name
-                  hasProjectsEnabled
-                  viewerPermission
-                  projectsV2(first: 1) {
-                    nodes {
+            const query = `query($owner: String!, $name: String!, $issue: Int!) { 
+                user(login: $owner) {
+                  repository(name: $name) {
+                    issue(number: $issue) {
+                      title
                       number
-                      id
+                      projectsV2(first:1) {
+                        nodes {
+                          id
+                        }
+                      }
                     }
                   }
                 }
-              }
-            }`;
+              }`;
             const variables = {
               owner: context.repo.owner,
               name: context.repo.repo,
