@@ -202,9 +202,8 @@ jobs:
               };
               try {
                 await github.graphql(updateProjectMutation, variables);
-                console.log(`Added Bet URL to issue #${issueNumber}.`);
               } catch (error) {
-                console.log(`Failed to add Bet URL to issue #${issueNumber}`, error);
+                console.log(`Failed mutation for issue #${issueNumber}`, error);
               }
             };
             if (isIssueKindBet) {
@@ -220,12 +219,15 @@ jobs:
                   let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0]?.id
                   if (!projectScopes.includes(project.id)) {
                     await addIssueToProject(scope.id, project.id)
+                    console.log(`Added issue #${scope.number} to project ${project.id}.`);
                   }
                   if (scope.id && itemId && betFieldId) {
-                    await updateProjectFieldValue(project.id, itemId, betFieldId, {"text": betURL})
+                    await updateProjectFieldValue(project.id, itemId, betFieldId, {"text": betURL});
+                    console.log(`Added betURL to issue #${scope.number}`);
                   }
                   if (scope.id && itemId && kindFieldId && scopeFieldOption) {
-                    await updateProjectFieldValue(project.id, itemId, kindFieldId, {"singleSelectOptionId": scopeFieldOption})
+                    await updateProjectFieldValue(project.id, itemId, kindFieldId, {"singleSelectOptionId": scopeFieldOption});
+                    console.log(`Added kind=scope to issue #${scope.number}`);
                   }
                   console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
                 }
