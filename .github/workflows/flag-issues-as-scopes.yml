@@ -19,12 +19,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: console.log(context)
-      - name: Generate a token
-        id: generate_token
-        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.PRIVATE_KEY }}
+      # - name: Generate a token
+      #   id: generate_token
+      #   uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+      #   with:
+      #     app_id: ${{ secrets.APP_ID }}
+      #     private_key: ${{ secrets.PRIVATE_KEY }}
       - name: Get the issue project informations
         id: project-info  
         uses: actions/github-script@v6
@@ -47,6 +47,7 @@ jobs:
                           nodes {
                             id
                             number
+                            title
                             labels(first:10) {
                               nodes {
                                 name
@@ -85,44 +86,49 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const changes = context.payload.changes;
+            const issueData = ${{ steps.project-info.outputs.result }}
+            const projectId = issueData.user.repository.issue.projectsV2.nodes.length > 0 ? issueData.user.repository.issue.projectsV2.nodes[0] : null
             const issueNumber = issue.number;
-            const projectId = 4; // Replace with the desired project number
-            const kind = 'kind/bet'; // Replace with the desired kind
+            const kind = 'kind/bet';
 
-            const isIssueBelongsToProject = issue.project_card !== undefined && issue.project_card.project_id === projectId;
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
-            console.log(`Issue Chages`, changes.body, `Current body`, issue.body);
-            console.log(`isIssueBelongsToProject`, isIssueBelongsToProject, `isIssueKindBet`, isIssueKindBet)
+            const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
+
+
+            const addIssueToProject = async (issueNumber, projectId) => {
+              const addToProjectMutation = `mutation {
+                  addProjectV2ItemById(input: {projectId: ${projectId}, contentId: ${issueNumber}}) {
+                    clientMutationId
+                  }
+              }`;
+              const variables = {
+                  owner: context.repo.owner,
+                  name: context.repo.repo
+              };
+              
+              try {
+                await github.graphql(addToProjectMutation, variables);
+                console.log(`Added issue #${issueNumber} to project ${projectId}.`);
+              } catch (error) {
+                console.log(`Failed to add issue #${issueNumber} to project column:`, error);
+              }
+            };
+
             if (isIssueKindBet) {
               const oldDescription = changes.body ? changes.body.from : '';
               const newDescription = issue.body;
-
+              if (!projectId) {
+                console.log("This issue have not a project assigned")
+                return;
+              }
               if (oldDescription !== newDescription) {
-                console.log('Issue description has changed.');
-                console.log('Old Description:', oldDescription);
-                console.log('New Description:', newDescription);
-
-                const scopeIndex = newDescription.indexOf('### Scope');
-                if (scopeIndex !== -1) {
-                  const scopeText = newDescription.slice(scopeIndex);
-                  const pattern = /### Scope\s*\n([\s\S]*?)(?=###|$)/
-                  const match = scopeText.match(pattern);
-                  const tasks = match[1].trim().split('\n').map(task => task.match(/#(\d+)/)[1])
-                  if (tasks && tasks.length > 0) {
-                    console.log('Tasks:');
-                    console.log(JSON.stringify(tasks));
-                    return (tasks.join(','))
-                  } else {
-                    console.log('No tasks found under the Scope section.');
-                    return ('')
+                for (const scope of trackedTasks) {
+                  console.log("Working with ", scope.name)
+                  // Adding tracked issues to the project if they are not
+                  if (!scope.projectsV2.nodes.includes(projectId)) {
+                    await addIssueToProject(scope, projectId)
                   }
-                } else {
-                  console.log('Scope section not found in the description.');
-                  return ('')
                 }
-              } else {
-                console.log('Issue description did not change.');
-                return ('')
               }
             }
       # - name: Add to Project beta
@@ -173,7 +179,8 @@ jobs:
               }
             };
             for (const scope of tasksAsArray) {
-              console.log("Working with ", scope)
+              console.log("Working with ", scope.title)
+              if (scope.projectsV2.nodes.includes())
               await addIssueToProject(scope, projectId)
             }
 
