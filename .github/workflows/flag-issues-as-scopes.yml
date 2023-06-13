@@ -178,7 +178,7 @@ jobs:
               }
             };
 
-            const updateProjectFieldValue = async (projectId, itemId, fieldId, value) {
+            const updateProjectFieldValue = async (projectId, itemId, fieldId, value) => {
               const updateProjectMutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
                 updateProjectV2ItemFieldValue(input: $input) {
                     clientMutationId
@@ -193,7 +193,6 @@ jobs:
                 }
               }
             };
-
             if (isIssueKindBet) {
               const oldDescription = changes.body ? changes.body.from : '';
               const newDescription = issue.body;
@@ -212,4 +211,3 @@ jobs:
                 }
               }
             }
-        
