@@ -33,36 +33,100 @@ jobs:
           result-encoding: json
           script: |
             const query = `query($owner: String!, $name: String!, $issue: Int!) { 
-                  user(login: $owner) {
-                    repository(name: $name) {
-                      issue(number: $issue) {
-                        title
-                        number
-                        projectsV2(first:1) {
-                          nodes {
-                            id
-                          }
-                        }
-                        trackedIssues(first:100) {
-                          nodes {
-                            id
-                            number
-                            title
-                            labels(first:10) {
-                              nodes {
-                                name
-                              }
-                            }
+                        user(login: $owner) {
+                          repository(name: $name) {
                             projectsV2(first:1) {
-                              nodes {
-                                id
+                                nodes {
+                                  id
+                                  number
+                                  fields(first:100) {
+                                    nodes {
+                                      ...on ProjectV2Field{
+                                        id
+                                        name
+                                      }
+                                      ...on ProjectV2SingleSelectField{
+                                        id
+                                        name
+                                        options {
+                                          id
+                                          name
+                                        }
+                                      }
+                                      ...on ProjectV2IterationField {
+                                        id
+                                        name
+                                        configuration {
+                                          iterations {
+                                            id
+                                            title
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                  items(first: 100) {
+                                    nodes {
+                                      id
+                                      content {
+                                        ...on Issue {
+                                          id
+                                          title
+                                          number
+                                        }
+                                      }
+                                      fieldValues(first:100) {
+                                        nodes {
+                                          ...on ProjectV2ItemFieldSingleSelectValue {
+                                              field {
+                                                ...on ProjectV2Field {
+                                                  id
+                                                  name
+                                                }
+                                              }
+                                              id
+                                              name
+                                            }
+                                          ...on ProjectV2ItemFieldTextValue {
+                                              field {
+                                                ...on ProjectV2Field {
+                                                  name
+                                                }
+                                              }
+                                            id
+                                              text
+                                            }
+                                          ...on ProjectV2ItemFieldIterationValue {
+                                            field {
+                                              ...on ProjectV2IterationField {
+                                                name
+                                              }
+                                            }
+                                            iterationId
+                                            title
+                                            startDate
+                                            duration
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
                               }
-                            }
-                          }
+                            issue(number: $issue) {
+                              title
+                              id
+                              number
+                              trackedIssues(first:100) {
+                                nodes {
+                                  id
+                                  number
+                                  title
+                                }
+                              }
+                                }
                         }
-                    }
                   }
-                }
               }`;
             const variables = {
               owner: context.repo.owner,
@@ -78,7 +142,7 @@ jobs:
           script: |
             const data = ${{ steps.project-info.outputs.result }}
             console.log(data)
-      - name: Extract scope tasks
+      - name: Add tracked tasks to projet
         id: extract-tasks
         uses: actions/github-script@v6
         with:
@@ -114,6 +178,16 @@ jobs:
               }
             };
 
+            const updateProjectField = async (issueId, projectId, field, fieldValue) {
+              const updateProjectMutation = `mutation {
+                updateProjectV2ItemFieldValue
+              }`;
+              const variables = {
+                owner: context.repo.owner,
+                name: context.repo.repo
+              }
+            };
+
             if (isIssueKindBet) {
               const oldDescription = changes.body ? changes.body.from : '';
               const newDescription = issue.body;
@@ -134,3 +208,4 @@ jobs:
                 }
               }
             }
+        
