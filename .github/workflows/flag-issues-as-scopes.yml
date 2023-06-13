@@ -164,7 +164,9 @@ jobs:
             const scopeFieldOption = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].options.filter(o => o.name === "Scope")[0].id
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
             const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
-            const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`
+            const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`;
+            const cycleFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Cycle")[0].id
+            const cycleIterationId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(i => i.content.id === issue.node_id)[0]?.fieldValues.nodes.filter(f => f.field?.name === "Cycle")[0]?.iterationId;
 
 
             const addIssueToProject = async (issueNumber, projectId) => {
@@ -228,6 +230,10 @@ jobs:
                   if (scope.id && itemId && kindFieldId && scopeFieldOption) {
                     await updateProjectFieldValue(project.id, itemId, kindFieldId, {"singleSelectOptionId": scopeFieldOption});
                     console.log(`Added kind=scope to issue #${scope.number}`);
+                  }
+                  if (scope.id && itemId && cycleFieldId && cycleIterationId) {
+                    await updateProjectFieldValue(project.id, itemId, cycleFieldId, {"iterationId": cycleIterationId});
+                    console.log(`Added the same cycle as #${issue.number} to issue #${scope.number}`);
                   }
                   console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
                 }
