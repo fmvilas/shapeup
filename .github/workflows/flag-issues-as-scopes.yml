@@ -129,7 +129,7 @@ jobs:
                   // Adding tracked issues to the project if they are not
                   if (!projectScopes.includes(project.id)) {
                     console.log("SHOULD ADD HERE", scope.id, project.id)
-                    // await addIssueToProject(scope.id, project.id)
+                    await addIssueToProject(scope.id, project.id)
                   }
                 }
               }
