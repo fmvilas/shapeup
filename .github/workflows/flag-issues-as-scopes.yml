@@ -127,7 +127,7 @@ jobs:
                                 }
                         }
                   }
-              }`;
+            }`;
             const variables = {
               owner: context.repo.owner,
               name: context.repo.repo,
@@ -154,7 +154,7 @@ jobs:
             const project = issueData.user.repository.issue.projectsV2.nodes.length > 0 ? issueData.user.repository.issue.projectsV2.nodes[0] : null
             const issueNumber = issue.number;
             const kind = 'kind/bet';
-
+            const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
             const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
 
@@ -178,13 +178,19 @@ jobs:
               }
             };
 
-            const updateProjectField = async (issueId, projectId, field, fieldValue) {
-              const updateProjectMutation = `mutation {
-                updateProjectV2ItemFieldValue
+            const updateProjectFieldValue = async (projectId, itemId, fieldId, value) {
+              const updateProjectMutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
+                updateProjectV2ItemFieldValue(input: $input) {
+                    clientMutationId
+                }
               }`;
               const variables = {
-                owner: context.repo.owner,
-                name: context.repo.repo
+                input : {
+                  projectId: projectId,
+                  itemId: itemId,
+                  fieldId: fieldId,
+                  value: value
+                }
               }
             };
 
@@ -197,14 +203,12 @@ jobs:
               }
               if (oldDescription !== newDescription) {
                 for (const scope of trackedTasks) {
-                  console.log("Working with ", scope.title)
                   let projectScopes = scope.projectsV2.nodes.map((p) => p.id)
-                  console.log(`Scope projects`, projectScopes, `projectID`, project.id)
-                  // Adding tracked issues to the project if they are not
+                  let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0].id
                   if (!projectScopes.includes(project.id)) {
-                    console.log("SHOULD ADD HERE", scope.id, project.id)
                     await addIssueToProject(scope.id, project.id)
                   }
+                  console.log(`itemId`, itemId, `betFieldId`, betFieldId)
                 }
               }
             }
