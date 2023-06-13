@@ -82,7 +82,7 @@ jobs:
         id: extract-tasks
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ACCESS_TOKEN }}
           script: |
             const issue = context.payload.issue;
             const changes = context.payload.changes;
