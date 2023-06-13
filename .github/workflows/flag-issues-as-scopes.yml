@@ -97,7 +97,7 @@ jobs:
 
             const addIssueToProject = async (issueNumber, projectId) => {
               const addToProjectMutation = `mutation {
-                  addProjectV2ItemById(input: {projectId: ${projectId}, contentId: ${issueNumber}}) {
+                  addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
                     clientMutationId
                   }
               }`;
