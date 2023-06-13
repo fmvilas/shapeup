@@ -50,8 +50,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const data = steps.project-info.outputs.result
-            console.log(data)
+            const data = ${{ steps.project-info.outputs.result }}
+            let projectNodeId = null;
+            if (data.user.repository.issue.projectsV2.nodes.length > 0) {
+              projectNodeId = data.user.repository.issue.projectsV2.nodes[0].id
+            }
+            console.log(`data`, data, `projectNodeId`, projectNodeId)
       - name: Extract scope tasks
         id: extract-tasks
         uses: actions/github-script@v6
