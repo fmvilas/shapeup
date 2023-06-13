@@ -6,6 +6,9 @@ on:
       - edited
   workflow_dispatch: {}
 
+env:
+  PROJECT_NUMBER: 4
+
 jobs:
   flag-issues-as-scopes:
     runs-on: ubuntu-latest
@@ -14,6 +17,41 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: console.log(context)
+      - name: Get the issue project informations
+        id: project-info  
+        uses: actions/github-script@v6
+        with:
+          result-encoding: json
+          script: |
+            const query = `query($owner: String!, $name: String!, $issue: Int!) { 
+                user(login: $owner) {
+                  repository(name: $name) {
+                    issue(number: $issue) {
+                      title
+                      number
+                      projectsV2(first:1) {
+                        nodes {
+                          id
+                        }
+                      }
+                    }
+                  }
+                }
+              }`;
+            const variables = {
+              owner: context.repo.owner,
+              name: context.repo.repo,
+              issue: context.payload.issue.number
+            }
+            const result = await github.graphql(query, variables)
+            console.log(result)
+            return result
+      - name: Use the project Info
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const data = steps.project-info.outputs.result
+            console.log(data)
       - name: Extract scope tasks
         id: extract-tasks
         uses: actions/github-script@v6
