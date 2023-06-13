@@ -44,6 +44,8 @@ jobs:
             const result = await github.graphql(query, variables)
             console.log(JSON.stringify(result))
             return result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Use the project Info
         uses: actions/github-script@v6
         with:
