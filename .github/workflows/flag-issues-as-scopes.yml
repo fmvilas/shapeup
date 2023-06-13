@@ -29,7 +29,7 @@ jobs:
         id: project-info  
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.ACCESS_TOKEN }}
+          github-token: ${{ steps.generate_token.outputs.token }}
           result-encoding: json
           script: |
             const query = `query($owner: String!, $name: String!) { 
@@ -57,7 +57,7 @@ jobs:
             console.log(JSON.stringify(result))
             return result
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
       - name: Use the project Info
         uses: actions/github-script@v6
         with:
