@@ -225,7 +225,7 @@ jobs:
                     await updateProjectFieldValue(project.id, itemId, betFieldId, {"text": betURL})
                   }
                   if (scope.id && itemId && scopeFieldOption) {
-                    await updateProjectFieldValue(project.id, itemId, betFieldId, {"singleSelectOptionId": scopeFieldOption})
+                    await updateProjectFieldValue(project.id, itemId, kindFieldId, {"singleSelectOptionId": scopeFieldOption})
                   }
                   console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
                 }
