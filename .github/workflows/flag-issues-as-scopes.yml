@@ -33,16 +33,32 @@ jobs:
           result-encoding: json
           script: |
             const query = `query($owner: String!, $name: String!, $issue: Int!) { 
-                user(login: $owner) {
-                  repository(name: $name) {
-                    issue(number: $issue) {
-                      title
-                      number
-                      projectsV2(first:1) {
-                        nodes {
-                          id
+                  user(login: $owner) {
+                    repository(name: $name) {
+                      issue(number: $issue) {
+                        title
+                        number
+                        projectsV2(first:1) {
+                          nodes {
+                            id
+                          }
                         }
-                      }
+                        trackedIssues(first:100) {
+                          nodes {
+                            id
+                            number
+                            labels(first:10) {
+                              nodes {
+                                name
+                              }
+                            }
+                            projectsV2(first:1) {
+                              nodes {
+                                id
+                              }
+                            }
+                          }
+                        }
                     }
                   }
                 }
@@ -64,11 +80,12 @@ jobs:
         with:
           script: |
             const data = ${{ steps.project-info.outputs.result }}
-            let projectNodeId = null;
-            if (data.user.repository.issue.projectsV2.nodes.length > 0) {
-              projectNodeId = data.user.repository.issue.projectsV2.nodes[0].id
-            }
-            console.log(`projectNodeId`, projectNodeId);
+            console.log(data)
+            # let projectNodeId = null;
+            # if (data.user.repository.issue.projectsV2.nodes.length > 0) {
+            #   projectNodeId = data.user.repository.issue.projectsV2.nodes[0].id
+            # }
+            # console.log(`projectNodeId`, projectNodeId);
       - name: Extract scope tasks
         id: extract-tasks
         uses: actions/github-script@v6
