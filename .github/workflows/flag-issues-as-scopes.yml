@@ -29,10 +29,8 @@ jobs:
                     issue(number: $issue) {
                       title
                       number
-                      projectsV2(first:1) {
-                        nodes {
-                          id
-                        }
+                      projectV2(number:4) {
+                        id
                       }
                     }
                   }
@@ -51,10 +49,7 @@ jobs:
         with:
           script: |
             const data = ${{ steps.project-info.outputs.result }}
-            let projectNodeId = null;
-            if (data.user.repository.issue.projectsV2.nodes.length > 0) {
-              projectNodeId = data.user.repository.issue.projectsV2.nodes[0].id
-            }
+            const projectNodeId = data.user.repository.issue.projectV2.id;
             console.log(`data`, data, `projectNodeId`, projectNodeId)
       - name: Extract scope tasks
         id: extract-tasks
