@@ -110,7 +110,7 @@ jobs:
                 await github.graphql(addToProjectMutation, variables);
                 console.log(`Added issue #${issueNumber} to project ${projectId}.`);
               } catch (error) {
-                console.log(`Failed to add issue #${issueNumber} to project column:`, error);
+                console.log(`Failed to add issue #${issueNumber} to project ${projectId}:`, error);
               }
             };
 
