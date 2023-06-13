@@ -12,6 +12,8 @@ env:
 jobs:
   flag-issues-as-scopes:
     runs-on: ubuntu-latest
+    permissions:
+      projects: write
     steps:
       - name: View context attributes
         uses: actions/github-script@v6
