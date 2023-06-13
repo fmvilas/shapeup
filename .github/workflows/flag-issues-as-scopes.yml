@@ -122,6 +122,11 @@ jobs:
                                   id
                                   number
                                   title
+                                  projectsV2(first:1) {
+                                    nodes {
+                                      id
+                                    }
+                                  }
                                 }
                               }
                                 }
@@ -151,7 +156,7 @@ jobs:
             const issue = context.payload.issue;
             const changes = context.payload.changes;
             const issueData = ${{ steps.project-info.outputs.result }}
-            const project = issueData.user.repository.issue.projectsV2.nodes.length > 0 ? issueData.user.repository.issue.projectsV2.nodes[0] : null
+            const project = issueData.user.repository.projectsV2.nodes.length > 0 ? issueData.user.repository.projectsV2.nodes[0] : null
             const issueNumber = issue.number;
             const kind = 'kind/bet';
             const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
