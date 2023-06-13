@@ -70,22 +70,13 @@ jobs:
             }
             const result = await github.graphql(query, variables)
             console.log(JSON.stringify(result))
-            console.log("The generated token is masked: ${TOKEN}")
             return result
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        #   TOKEN: ${{ steps.generate_token.outputs.token }}
       - name: Use the project Info
         uses: actions/github-script@v6
         with:
           script: |
             const data = ${{ steps.project-info.outputs.result }}
             console.log(data)
-            # let projectNodeId = null;
-            # if (data.user.repository.issue.projectsV2.nodes.length > 0) {
-            #   projectNodeId = data.user.repository.issue.projectsV2.nodes[0].id
-            # }
-            # console.log(`projectNodeId`, projectNodeId);
       - name: Extract scope tasks
         id: extract-tasks
         uses: actions/github-script@v6
