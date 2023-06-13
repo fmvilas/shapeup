@@ -44,7 +44,7 @@ jobs:
               issue: context.payload.issue.number
             }
             const result = await github.graphql(query, variables)
-            console.log(result)
+            console.log(JSON.stringify(result))
             return result
       - name: Use the project Info
         uses: actions/github-script@v6
