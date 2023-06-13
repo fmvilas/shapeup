@@ -212,7 +212,7 @@ jobs:
                   if (!projectScopes.includes(project.id)) {
                     await addIssueToProject(scope.id, project.id)
                   }
-                  console.log(`itemId`, itemId, `betFieldId`, betFieldId)
+                  console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
                 }
               }
             }
