@@ -197,6 +197,12 @@ jobs:
                   fieldId: fieldId,
                   value: value
                 }
+              };
+              try {
+                await github.graphql(addToProjectMutation, variables);
+                console.log(`Added Bet URL to issue #${issueNumber}.`);
+              } catch (error) {
+                console.log(`Failed to add Bet URL to issue #${issueNumber}`, error);
               }
             };
             if (isIssueKindBet) {
