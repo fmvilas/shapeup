@@ -39,7 +39,7 @@ jobs:
                   name
                   hasProjectsEnabled
                   viewerPermission
-                  projectsV2(first: 2) {
+                  projectsV2(first: 1) {
                     nodes {
                       number
                       id
@@ -65,8 +65,11 @@ jobs:
         with:
           script: |
             const data = ${{ steps.project-info.outputs.result }}
-            const projectNodeId = data.user.repository.issue.projectV2.id;
-            console.log(`data`, data, `projectNodeId`, projectNodeId)
+            let projectNodeId = null;
+            if (data.user.repository.issue.projectsV2.nodes.length > 0) {
+              projectNodeId = data.user.repository.issue.projectsV2.nodes[0].id
+            }
+            console.log(`projectNodeId`, projectNodeId);
       - name: Extract scope tasks
         id: extract-tasks
         uses: actions/github-script@v6
