@@ -160,6 +160,8 @@ jobs:
             const issueNumber = issue.number;
             const kind = 'kind/bet';
             const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
+            const kindFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].id
+            const scopeFieldOption = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].options.filter(o => o.name === "Scope")[0].id
             const isIssueKindBet = issue.labels.some(label => label.name === kind);
             const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
             const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`
@@ -221,6 +223,9 @@ jobs:
                   }
                   if (scope.id && itemId && betFieldId) {
                     await updateProjectFieldValue(project.id, itemId, betFieldId, {"text": betURL})
+                  }
+                  if (scope.id && itemId && scopeFieldOption) {
+                    await updateProjectFieldValue(project.id, itemId, betFieldId, {"singleSelectOptionId": scopeFieldOption})
                   }
                   console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
                 }
