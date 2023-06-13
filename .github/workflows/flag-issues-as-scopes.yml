@@ -19,11 +19,17 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: console.log(context)
+      - name: Generate a token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
       - name: Get the issue project informations
         id: project-info  
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.generate_token.outputs.token }}
           result-encoding: json
           script: |
             const query = `query($owner: String!, $name: String!) { 
