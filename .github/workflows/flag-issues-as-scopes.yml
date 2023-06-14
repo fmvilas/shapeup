@@ -214,16 +214,131 @@ jobs:
                 }
               }
             }
+      - name: Get updated project infos
+        id: project-info-update 
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.ACCESS_TOKEN }}
+          result-encoding: json
+          script: |
+            const query = `query($owner: String!, $name: String!, $issue: Int!) { 
+                        user(login: $owner) {
+                          repository(name: $name) {
+                            projectsV2(first:1) {
+                                nodes {
+                                  id
+                                  number
+                                  fields(first:100) {
+                                    nodes {
+                                      ...on ProjectV2Field{
+                                        id
+                                        name
+                                      }
+                                      ...on ProjectV2SingleSelectField{
+                                        id
+                                        name
+                                        options {
+                                          id
+                                          name
+                                        }
+                                      }
+                                      ...on ProjectV2IterationField {
+                                        id
+                                        name
+                                        configuration {
+                                          iterations {
+                                            id
+                                            title
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                  items(first: 100) {
+                                    nodes {
+                                      id
+                                      content {
+                                        ...on Issue {
+                                          id
+                                          title
+                                          number
+                                        }
+                                      }
+                                      fieldValues(first:100) {
+                                        nodes {
+                                          ...on ProjectV2ItemFieldSingleSelectValue {
+                                              field {
+                                                ...on ProjectV2Field {
+                                                  id
+                                                  name
+                                                }
+                                              }
+                                              id
+                                              name
+                                            }
+                                          ...on ProjectV2ItemFieldTextValue {
+                                              field {
+                                                ...on ProjectV2Field {
+                                                  name
+                                                }
+                                              }
+                                            id
+                                              text
+                                            }
+                                          ...on ProjectV2ItemFieldIterationValue {
+                                            field {
+                                              ...on ProjectV2IterationField {
+                                                name
+                                              }
+                                            }
+                                            iterationId
+                                            title
+                                            startDate
+                                            duration
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            issue(number: $issue) {
+                              title
+                              id
+                              number
+                              trackedIssues(first:100) {
+                                nodes {
+                                  id
+                                  number
+                                  title
+                                  projectsV2(first:1) {
+                                    nodes {
+                                      id
+                                    }
+                                  }
+                                }
+                              }
+                                }
+                        }
+                  }
+            }`;
+            const variables = {
+              owner: context.repo.owner,
+              name: context.repo.repo,
+              issue: context.payload.issue.number
+            }
+            const result = await github.graphql(query, variables)
+            console.log(JSON.stringify(result))
+            return result      
       - name: Update missing fields
         id: update-missing-fields
-        needs: [project-info]
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.ACCESS_TOKEN }}
           script: |
             const issue = context.payload.issue;
             const changes = context.payload.changes;
-            const issueData = ${{ steps.project-info.outputs.result }}
+            const issueData = ${{ steps.project-info-update.outputs.result }}
             const project = issueData.user.repository.projectsV2.nodes.length > 0 ? issueData.user.repository.projectsV2.nodes[0] : null
             const issueNumber = issue.number;
             const kind = 'kind/bet';
