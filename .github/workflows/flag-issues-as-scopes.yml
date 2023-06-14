@@ -15,16 +15,10 @@ jobs:
     permissions:
       repository-projects: write
     steps:
-      - name: View context attributes
-        uses: actions/github-script@v6
-        with:
-          script: console.log(context)
-      # - name: Generate a token
-      #   id: generate_token
-      #   uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+      # - name: View context attributes
+      #   uses: actions/github-script@v6
       #   with:
-      #     app_id: ${{ secrets.APP_ID }}
-      #     private_key: ${{ secrets.PRIVATE_KEY }}
+      #     script: console.log(context)
       - name: Get the issue project informations
         id: project-info  
         uses: actions/github-script@v6
@@ -141,14 +135,88 @@ jobs:
             const result = await github.graphql(query, variables)
             console.log(JSON.stringify(result))
             return result
-      - name: Use the project Info
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const data = ${{ steps.project-info.outputs.result }}
-            console.log(data)
       - name: Add tracked tasks to projet
         id: extract-tasks
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.ACCESS_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const changes = context.payload.changes;
+            const issueData = ${{ steps.project-info.outputs.result }}
+            const project = issueData.user.repository.projectsV2.nodes.length > 0 ? issueData.user.repository.projectsV2.nodes[0] : null
+            const issueNumber = issue.number;
+            const kind = 'kind/bet';
+            const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
+            const kindFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].id
+            const scopeFieldOption = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].options.filter(o => o.name === "Scope")[0].id
+            const isIssueKindBet = issue.labels.some(label => label.name === kind);
+            const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
+            const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`;
+            const cycleFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Cycle")[0].id
+            const cycleIterationId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(i => i.content.id === issue.node_id)[0]?.fieldValues.nodes.filter(f => f.field?.name === "Cycle")[0]?.iterationId;
+
+
+            const addIssueToProject = async (issueNumber, projectId) => {
+              const addToProjectMutation = `mutation {
+                  addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
+                    clientMutationId
+                  }
+              }`;
+              const variables = {
+                  owner: context.repo.owner,
+                  name: context.repo.repo
+              };
+              
+              try {
+                await github.graphql(addToProjectMutation, variables);
+                console.log(`Added issue #${issueNumber} to project ${projectId}.`);
+              } catch (error) {
+                console.log(`Failed to add issue #${issueNumber} to project ${projectId}:`, error);
+              }
+            };
+
+            const updateProjectFieldValue = async (projectId, itemId, fieldId, value) => {
+              const updateProjectMutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
+                updateProjectV2ItemFieldValue(input: $input) {
+                    clientMutationId
+                }
+              }`;
+              const variables = {
+                input : {
+                  projectId: projectId,
+                  itemId: itemId,
+                  fieldId: fieldId,
+                  value: value
+                }
+              };
+              try {
+                await github.graphql(updateProjectMutation, variables);
+              } catch (error) {
+                console.log(`Failed mutation for issue #${issueNumber}`, error);
+              }
+            };
+            if (isIssueKindBet) {
+              const oldDescription = changes.body ? changes.body.from : '';
+              const newDescription = issue.body;
+              if (!project) {
+                console.log("This issue have not a project assigned")
+                return;
+              }
+              if (oldDescription !== newDescription) {
+                for (const scope of trackedTasks) {
+                  let projectScopes = scope.projectsV2.nodes.map((p) => p.id)
+                  let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0]?.id
+                  if (!projectScopes.includes(project.id)) {
+                    await addIssueToProject(scope.id, project.id)
+                    console.log(`Added issue #${scope.number} to project ${project.id}.`);
+                  }
+                }
+              }
+            }
+      - name: Update missing fields
+        id: update-missing-fields
+        needs: [project-info]
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.ACCESS_TOKEN }}
