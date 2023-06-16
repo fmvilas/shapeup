@@ -87,18 +87,22 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId } = ${{ steps.parse.outputs.result }}
+            const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId } = ${{ steps.parse.outputs.result }};
             const regex = /###?\s+Scope\s*\n([\s\S]*?)(?=###?|$)/;
             console.log(betIssueDescription);
-            console.log(issueNumber, repo, owner, repoUrl)
+            console.log(issueNumber, repo, owner, repoUrl)l
             const match = betIssueDescription.match(regex);
+            const taskNumber = context.payload.issue.number;
             if (!match) {
               console.log("Nothing to do in this issue");
-              return
+              return;
             }
-            console.log(match)
             const currentScope = match[1].trim();
-            const newTask = '- [ ] New Task';
+            const newTask = `- [ ] #${taskNumber}`;
+            if (!betIssueDescription.match(`/-\s+\[[ x]\]\s+#${taskNumber}+/`)) {
+              console.log("This issue already exists");
+              return;
+            }
             const newScope = `${currentScope}\n${newTask}`;
             const newBetDescription = betIssueDescription.replace(currentScope, newScope);
             if (!match) {
