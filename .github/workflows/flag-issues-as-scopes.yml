@@ -1,424 +1,424 @@
-name: Flag issues as scopes
+# name: Flag issues as scopes
 
-on:
-  issues:
-    types:
-      - edited
-  workflow_dispatch: {}
+# on:
+#   issues:
+#     types:
+#       - edited
+#   workflow_dispatch: {}
 
-env:
-  PROJECT_NUMBER: 4
+# env:
+#   PROJECT_NUMBER: 4
 
-jobs:
-  flag-issues-as-scopes:
-    runs-on: ubuntu-latest
-    permissions:
-      repository-projects: write
-    steps:
-      # - name: View context attributes
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: console.log(context)
-      - name: Get the issue project informations
-        id: project-info  
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.ACCESS_TOKEN }}
-          result-encoding: json
-          script: |
-            const query = `query($owner: String!, $name: String!, $issue: Int!) { 
-                        user(login: $owner) {
-                          repository(name: $name) {
-                            projectsV2(first:1) {
-                                nodes {
-                                  id
-                                  number
-                                  fields(first:100) {
-                                    nodes {
-                                      ...on ProjectV2Field{
-                                        id
-                                        name
-                                      }
-                                      ...on ProjectV2SingleSelectField{
-                                        id
-                                        name
-                                        options {
-                                          id
-                                          name
-                                        }
-                                      }
-                                      ...on ProjectV2IterationField {
-                                        id
-                                        name
-                                        configuration {
-                                          iterations {
-                                            id
-                                            title
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                  items(first: 100) {
-                                    nodes {
-                                      id
-                                      content {
-                                        ...on Issue {
-                                          id
-                                          title
-                                          number
-                                        }
-                                      }
-                                      fieldValues(first:100) {
-                                        nodes {
-                                          ...on ProjectV2ItemFieldSingleSelectValue {
-                                              field {
-                                                ...on ProjectV2Field {
-                                                  id
-                                                  name
-                                                }
-                                              }
-                                              id
-                                              name
-                                            }
-                                          ...on ProjectV2ItemFieldTextValue {
-                                              field {
-                                                ...on ProjectV2Field {
-                                                  name
-                                                }
-                                              }
-                                            id
-                                              text
-                                            }
-                                          ...on ProjectV2ItemFieldIterationValue {
-                                            field {
-                                              ...on ProjectV2IterationField {
-                                                name
-                                              }
-                                            }
-                                            iterationId
-                                            title
-                                            startDate
-                                            duration
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            issue(number: $issue) {
-                              title
-                              id
-                              number
-                              trackedIssues(first:100) {
-                                nodes {
-                                  id
-                                  number
-                                  title
-                                  projectsV2(first:1) {
-                                    nodes {
-                                      id
-                                    }
-                                  }
-                                }
-                              }
-                                }
-                        }
-                  }
-            }`;
-            const variables = {
-              owner: context.repo.owner,
-              name: context.repo.repo,
-              issue: context.payload.issue.number
-            }
-            const result = await github.graphql(query, variables)
-            console.log(JSON.stringify(result))
-            return result
-      - name: Add tracked tasks to projet
-        id: extract-tasks
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.ACCESS_TOKEN }}
-          script: |
-            const issue = context.payload.issue;
-            const changes = context.payload.changes;
-            const issueData = ${{ steps.project-info.outputs.result }}
-            const project = issueData.user.repository.projectsV2.nodes.length > 0 ? issueData.user.repository.projectsV2.nodes[0] : null
-            const issueNumber = issue.number;
-            const kind = 'kind/bet';
-            const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
-            const kindFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].id
-            const scopeFieldOption = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].options.filter(o => o.name === "Scope")[0].id
-            const isIssueKindBet = issue.labels.some(label => label.name === kind);
-            const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
-            const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`;
-            const cycleFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Cycle")[0].id
-            const cycleIterationId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(i => i.content.id === issue.node_id)[0]?.fieldValues.nodes.filter(f => f.field?.name === "Cycle")[0]?.iterationId;
+# jobs:
+#   flag-issues-as-scopes:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       repository-projects: write
+#     steps:
+#       # - name: View context attributes
+#       #   uses: actions/github-script@v6
+#       #   with:
+#       #     script: console.log(context)
+#       - name: Get the issue project informations
+#         id: project-info  
+#         uses: actions/github-script@v6
+#         with:
+#           github-token: ${{ secrets.ACCESS_TOKEN }}
+#           result-encoding: json
+#           script: |
+#             const query = `query($owner: String!, $name: String!, $issue: Int!) { 
+#                         user(login: $owner) {
+#                           repository(name: $name) {
+#                             projectsV2(first:1) {
+#                                 nodes {
+#                                   id
+#                                   number
+#                                   fields(first:100) {
+#                                     nodes {
+#                                       ...on ProjectV2Field{
+#                                         id
+#                                         name
+#                                       }
+#                                       ...on ProjectV2SingleSelectField{
+#                                         id
+#                                         name
+#                                         options {
+#                                           id
+#                                           name
+#                                         }
+#                                       }
+#                                       ...on ProjectV2IterationField {
+#                                         id
+#                                         name
+#                                         configuration {
+#                                           iterations {
+#                                             id
+#                                             title
+#                                           }
+#                                         }
+#                                       }
+#                                     }
+#                                   }
+#                                   items(first: 100) {
+#                                     nodes {
+#                                       id
+#                                       content {
+#                                         ...on Issue {
+#                                           id
+#                                           title
+#                                           number
+#                                         }
+#                                       }
+#                                       fieldValues(first:100) {
+#                                         nodes {
+#                                           ...on ProjectV2ItemFieldSingleSelectValue {
+#                                               field {
+#                                                 ...on ProjectV2Field {
+#                                                   id
+#                                                   name
+#                                                 }
+#                                               }
+#                                               id
+#                                               name
+#                                             }
+#                                           ...on ProjectV2ItemFieldTextValue {
+#                                               field {
+#                                                 ...on ProjectV2Field {
+#                                                   name
+#                                                 }
+#                                               }
+#                                             id
+#                                               text
+#                                             }
+#                                           ...on ProjectV2ItemFieldIterationValue {
+#                                             field {
+#                                               ...on ProjectV2IterationField {
+#                                                 name
+#                                               }
+#                                             }
+#                                             iterationId
+#                                             title
+#                                             startDate
+#                                             duration
+#                                           }
+#                                         }
+#                                       }
+#                                     }
+#                                   }
+#                                 }
+#                               }
+#                             issue(number: $issue) {
+#                               title
+#                               id
+#                               number
+#                               trackedIssues(first:100) {
+#                                 nodes {
+#                                   id
+#                                   number
+#                                   title
+#                                   projectsV2(first:1) {
+#                                     nodes {
+#                                       id
+#                                     }
+#                                   }
+#                                 }
+#                               }
+#                                 }
+#                         }
+#                   }
+#             }`;
+#             const variables = {
+#               owner: context.repo.owner,
+#               name: context.repo.repo,
+#               issue: context.payload.issue.number
+#             }
+#             const result = await github.graphql(query, variables)
+#             console.log(JSON.stringify(result))
+#             return result
+#       - name: Add tracked tasks to projet
+#         id: extract-tasks
+#         uses: actions/github-script@v6
+#         with:
+#           github-token: ${{ secrets.ACCESS_TOKEN }}
+#           script: |
+#             const issue = context.payload.issue;
+#             const changes = context.payload.changes;
+#             const issueData = ${{ steps.project-info.outputs.result }}
+#             const project = issueData.user.repository.projectsV2.nodes.length > 0 ? issueData.user.repository.projectsV2.nodes[0] : null
+#             const issueNumber = issue.number;
+#             const kind = 'kind/bet';
+#             const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
+#             const kindFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].id
+#             const scopeFieldOption = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].options.filter(o => o.name === "Scope")[0].id
+#             const isIssueKindBet = issue.labels.some(label => label.name === kind);
+#             const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
+#             const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`;
+#             const cycleFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Cycle")[0].id
+#             const cycleIterationId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(i => i.content.id === issue.node_id)[0]?.fieldValues.nodes.filter(f => f.field?.name === "Cycle")[0]?.iterationId;
 
 
-            const addIssueToProject = async (issueNumber, projectId) => {
-              const addToProjectMutation = `mutation {
-                  addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
-                    clientMutationId
-                  }
-              }`;
-              const variables = {
-                  owner: context.repo.owner,
-                  name: context.repo.repo
-              };
+#             const addIssueToProject = async (issueNumber, projectId) => {
+#               const addToProjectMutation = `mutation {
+#                   addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
+#                     clientMutationId
+#                   }
+#               }`;
+#               const variables = {
+#                   owner: context.repo.owner,
+#                   name: context.repo.repo
+#               };
               
-              try {
-                await github.graphql(addToProjectMutation, variables);
-                console.log(`Added issue #${issueNumber} to project ${projectId}.`);
-              } catch (error) {
-                console.log(`Failed to add issue #${issueNumber} to project ${projectId}:`, error);
-              }
-            };
+#               try {
+#                 await github.graphql(addToProjectMutation, variables);
+#                 console.log(`Added issue #${issueNumber} to project ${projectId}.`);
+#               } catch (error) {
+#                 console.log(`Failed to add issue #${issueNumber} to project ${projectId}:`, error);
+#               }
+#             };
 
-            const updateProjectFieldValue = async (projectId, itemId, fieldId, value) => {
-              const updateProjectMutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
-                updateProjectV2ItemFieldValue(input: $input) {
-                    clientMutationId
-                }
-              }`;
-              const variables = {
-                input : {
-                  projectId: projectId,
-                  itemId: itemId,
-                  fieldId: fieldId,
-                  value: value
-                }
-              };
-              try {
-                await github.graphql(updateProjectMutation, variables);
-              } catch (error) {
-                console.log(`Failed mutation for issue #${issueNumber}`, error);
-              }
-            };
-            if (isIssueKindBet) {
-              const oldDescription = changes.body ? changes.body.from : '';
-              const newDescription = issue.body;
-              if (!project) {
-                console.log("This issue have not a project assigned")
-                return;
-              }
-              if (oldDescription !== newDescription) {
-                for (const scope of trackedTasks) {
-                  let projectScopes = scope.projectsV2.nodes.map((p) => p.id)
-                  let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0]?.id
-                  if (!projectScopes.includes(project.id)) {
-                    await addIssueToProject(scope.id, project.id)
-                    console.log(`Added issue #${scope.number} to project ${project.id}.`);
-                  }
-                }
-              }
-            }
-      - name: Get updated project infos
-        id: project-info-update 
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.ACCESS_TOKEN }}
-          result-encoding: json
-          script: |
-            const query = `query($owner: String!, $name: String!, $issue: Int!) { 
-                        user(login: $owner) {
-                          repository(name: $name) {
-                            projectsV2(first:1) {
-                                nodes {
-                                  id
-                                  number
-                                  fields(first:100) {
-                                    nodes {
-                                      ...on ProjectV2Field{
-                                        id
-                                        name
-                                      }
-                                      ...on ProjectV2SingleSelectField{
-                                        id
-                                        name
-                                        options {
-                                          id
-                                          name
-                                        }
-                                      }
-                                      ...on ProjectV2IterationField {
-                                        id
-                                        name
-                                        configuration {
-                                          iterations {
-                                            id
-                                            title
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                  items(first: 100) {
-                                    nodes {
-                                      id
-                                      content {
-                                        ...on Issue {
-                                          id
-                                          title
-                                          number
-                                        }
-                                      }
-                                      fieldValues(first:100) {
-                                        nodes {
-                                          ...on ProjectV2ItemFieldSingleSelectValue {
-                                              field {
-                                                ...on ProjectV2Field {
-                                                  id
-                                                  name
-                                                }
-                                              }
-                                              id
-                                              name
-                                            }
-                                          ...on ProjectV2ItemFieldTextValue {
-                                              field {
-                                                ...on ProjectV2Field {
-                                                  name
-                                                }
-                                              }
-                                            id
-                                              text
-                                            }
-                                          ...on ProjectV2ItemFieldIterationValue {
-                                            field {
-                                              ...on ProjectV2IterationField {
-                                                name
-                                              }
-                                            }
-                                            iterationId
-                                            title
-                                            startDate
-                                            duration
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            issue(number: $issue) {
-                              title
-                              id
-                              number
-                              trackedIssues(first:100) {
-                                nodes {
-                                  id
-                                  number
-                                  title
-                                  projectsV2(first:1) {
-                                    nodes {
-                                      id
-                                    }
-                                  }
-                                }
-                              }
-                                }
-                        }
-                  }
-            }`;
-            const variables = {
-              owner: context.repo.owner,
-              name: context.repo.repo,
-              issue: context.payload.issue.number
-            }
-            const result = await github.graphql(query, variables)
-            console.log(JSON.stringify(result))
-            return result      
-      - name: Update missing fields
-        id: update-missing-fields
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.ACCESS_TOKEN }}
-          script: |
-            const issue = context.payload.issue;
-            const changes = context.payload.changes;
-            const issueData = ${{ steps.project-info-update.outputs.result }}
-            const project = issueData.user.repository.projectsV2.nodes.length > 0 ? issueData.user.repository.projectsV2.nodes[0] : null
-            const issueNumber = issue.number;
-            const kind = 'kind/bet';
-            const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
-            const kindFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].id
-            const scopeFieldOption = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].options.filter(o => o.name === "Scope")[0].id
-            const isIssueKindBet = issue.labels.some(label => label.name === kind);
-            const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
-            const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`;
-            const cycleFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Cycle")[0].id
-            const cycleIterationId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(i => i.content.id === issue.node_id)[0]?.fieldValues.nodes.filter(f => f.field?.name === "Cycle")[0]?.iterationId;
+#             const updateProjectFieldValue = async (projectId, itemId, fieldId, value) => {
+#               const updateProjectMutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
+#                 updateProjectV2ItemFieldValue(input: $input) {
+#                     clientMutationId
+#                 }
+#               }`;
+#               const variables = {
+#                 input : {
+#                   projectId: projectId,
+#                   itemId: itemId,
+#                   fieldId: fieldId,
+#                   value: value
+#                 }
+#               };
+#               try {
+#                 await github.graphql(updateProjectMutation, variables);
+#               } catch (error) {
+#                 console.log(`Failed mutation for issue #${issueNumber}`, error);
+#               }
+#             };
+#             if (isIssueKindBet) {
+#               const oldDescription = changes.body ? changes.body.from : '';
+#               const newDescription = issue.body;
+#               if (!project) {
+#                 console.log("This issue have not a project assigned")
+#                 return;
+#               }
+#               if (oldDescription !== newDescription) {
+#                 for (const scope of trackedTasks) {
+#                   let projectScopes = scope.projectsV2.nodes.map((p) => p.id)
+#                   let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0]?.id
+#                   if (!projectScopes.includes(project.id)) {
+#                     await addIssueToProject(scope.id, project.id)
+#                     console.log(`Added issue #${scope.number} to project ${project.id}.`);
+#                   }
+#                 }
+#               }
+#             }
+#       - name: Get updated project infos
+#         id: project-info-update 
+#         uses: actions/github-script@v6
+#         with:
+#           github-token: ${{ secrets.ACCESS_TOKEN }}
+#           result-encoding: json
+#           script: |
+#             const query = `query($owner: String!, $name: String!, $issue: Int!) { 
+#                         user(login: $owner) {
+#                           repository(name: $name) {
+#                             projectsV2(first:1) {
+#                                 nodes {
+#                                   id
+#                                   number
+#                                   fields(first:100) {
+#                                     nodes {
+#                                       ...on ProjectV2Field{
+#                                         id
+#                                         name
+#                                       }
+#                                       ...on ProjectV2SingleSelectField{
+#                                         id
+#                                         name
+#                                         options {
+#                                           id
+#                                           name
+#                                         }
+#                                       }
+#                                       ...on ProjectV2IterationField {
+#                                         id
+#                                         name
+#                                         configuration {
+#                                           iterations {
+#                                             id
+#                                             title
+#                                           }
+#                                         }
+#                                       }
+#                                     }
+#                                   }
+#                                   items(first: 100) {
+#                                     nodes {
+#                                       id
+#                                       content {
+#                                         ...on Issue {
+#                                           id
+#                                           title
+#                                           number
+#                                         }
+#                                       }
+#                                       fieldValues(first:100) {
+#                                         nodes {
+#                                           ...on ProjectV2ItemFieldSingleSelectValue {
+#                                               field {
+#                                                 ...on ProjectV2Field {
+#                                                   id
+#                                                   name
+#                                                 }
+#                                               }
+#                                               id
+#                                               name
+#                                             }
+#                                           ...on ProjectV2ItemFieldTextValue {
+#                                               field {
+#                                                 ...on ProjectV2Field {
+#                                                   name
+#                                                 }
+#                                               }
+#                                             id
+#                                               text
+#                                             }
+#                                           ...on ProjectV2ItemFieldIterationValue {
+#                                             field {
+#                                               ...on ProjectV2IterationField {
+#                                                 name
+#                                               }
+#                                             }
+#                                             iterationId
+#                                             title
+#                                             startDate
+#                                             duration
+#                                           }
+#                                         }
+#                                       }
+#                                     }
+#                                   }
+#                                 }
+#                               }
+#                             issue(number: $issue) {
+#                               title
+#                               id
+#                               number
+#                               trackedIssues(first:100) {
+#                                 nodes {
+#                                   id
+#                                   number
+#                                   title
+#                                   projectsV2(first:1) {
+#                                     nodes {
+#                                       id
+#                                     }
+#                                   }
+#                                 }
+#                               }
+#                                 }
+#                         }
+#                   }
+#             }`;
+#             const variables = {
+#               owner: context.repo.owner,
+#               name: context.repo.repo,
+#               issue: context.payload.issue.number
+#             }
+#             const result = await github.graphql(query, variables)
+#             console.log(JSON.stringify(result))
+#             return result      
+#       - name: Update missing fields
+#         id: update-missing-fields
+#         uses: actions/github-script@v6
+#         with:
+#           github-token: ${{ secrets.ACCESS_TOKEN }}
+#           script: |
+#             const issue = context.payload.issue;
+#             const changes = context.payload.changes;
+#             const issueData = ${{ steps.project-info-update.outputs.result }}
+#             const project = issueData.user.repository.projectsV2.nodes.length > 0 ? issueData.user.repository.projectsV2.nodes[0] : null
+#             const issueNumber = issue.number;
+#             const kind = 'kind/bet';
+#             const betFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Bet")[0].id
+#             const kindFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].id
+#             const scopeFieldOption = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Kind")[0].options.filter(o => o.name === "Scope")[0].id
+#             const isIssueKindBet = issue.labels.some(label => label.name === kind);
+#             const trackedTasks = issueData.user.repository.issue.trackedIssues.nodes;
+#             const betURL = `https://github.com/Amzani/shapeup/issues/${issueNumber}`;
+#             const cycleFieldId = issueData.user.repository.projectsV2.nodes[0].fields.nodes.filter(f => f.name === "Cycle")[0].id
+#             const cycleIterationId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(i => i.content.id === issue.node_id)[0]?.fieldValues.nodes.filter(f => f.field?.name === "Cycle")[0]?.iterationId;
 
 
-            const addIssueToProject = async (issueNumber, projectId) => {
-              const addToProjectMutation = `mutation {
-                  addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
-                    clientMutationId
-                  }
-              }`;
-              const variables = {
-                  owner: context.repo.owner,
-                  name: context.repo.repo
-              };
+#             const addIssueToProject = async (issueNumber, projectId) => {
+#               const addToProjectMutation = `mutation {
+#                   addProjectV2ItemById(input: {projectId: "${projectId}", contentId: "${issueNumber}"}) {
+#                     clientMutationId
+#                   }
+#               }`;
+#               const variables = {
+#                   owner: context.repo.owner,
+#                   name: context.repo.repo
+#               };
               
-              try {
-                await github.graphql(addToProjectMutation, variables);
-                console.log(`Added issue #${issueNumber} to project ${projectId}.`);
-              } catch (error) {
-                console.log(`Failed to add issue #${issueNumber} to project ${projectId}:`, error);
-              }
-            };
+#               try {
+#                 await github.graphql(addToProjectMutation, variables);
+#                 console.log(`Added issue #${issueNumber} to project ${projectId}.`);
+#               } catch (error) {
+#                 console.log(`Failed to add issue #${issueNumber} to project ${projectId}:`, error);
+#               }
+#             };
 
-            const updateProjectFieldValue = async (projectId, itemId, fieldId, value) => {
-              const updateProjectMutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
-                updateProjectV2ItemFieldValue(input: $input) {
-                    clientMutationId
-                }
-              }`;
-              const variables = {
-                input : {
-                  projectId: projectId,
-                  itemId: itemId,
-                  fieldId: fieldId,
-                  value: value
-                }
-              };
-              try {
-                await github.graphql(updateProjectMutation, variables);
-              } catch (error) {
-                console.log(`Failed mutation for issue #${issueNumber}`, error);
-              }
-            };
-            if (isIssueKindBet) {
-              const oldDescription = changes.body ? changes.body.from : '';
-              const newDescription = issue.body;
-              if (!project) {
-                console.log("This issue have not a project assigned")
-                return;
-              }
-              if (oldDescription !== newDescription) {
-                for (const scope of trackedTasks) {
-                  let projectScopes = scope.projectsV2.nodes.map((p) => p.id)
-                  let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0]?.id
-                  if (!projectScopes.includes(project.id)) {
-                    await addIssueToProject(scope.id, project.id)
-                    console.log(`Added issue #${scope.number} to project ${project.id}.`);
-                  }
-                  if (scope.id && itemId && betFieldId) {
-                    await updateProjectFieldValue(project.id, itemId, betFieldId, {"text": betURL});
-                    console.log(`Added betURL to issue #${scope.number}`);
-                  }
-                  if (scope.id && itemId && kindFieldId && scopeFieldOption) {
-                    await updateProjectFieldValue(project.id, itemId, kindFieldId, {"singleSelectOptionId": scopeFieldOption});
-                    console.log(`Added kind=scope to issue #${scope.number}`);
-                  }
-                  if (scope.id && itemId && cycleFieldId && cycleIterationId) {
-                    await updateProjectFieldValue(project.id, itemId, cycleFieldId, {"iterationId": cycleIterationId});
-                    console.log(`Added the same cycle as #${issue.number} to issue #${scope.number}`);
-                  }
-                  console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
-                }
-              }
-            }
+#             const updateProjectFieldValue = async (projectId, itemId, fieldId, value) => {
+#               const updateProjectMutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
+#                 updateProjectV2ItemFieldValue(input: $input) {
+#                     clientMutationId
+#                 }
+#               }`;
+#               const variables = {
+#                 input : {
+#                   projectId: projectId,
+#                   itemId: itemId,
+#                   fieldId: fieldId,
+#                   value: value
+#                 }
+#               };
+#               try {
+#                 await github.graphql(updateProjectMutation, variables);
+#               } catch (error) {
+#                 console.log(`Failed mutation for issue #${issueNumber}`, error);
+#               }
+#             };
+#             if (isIssueKindBet) {
+#               const oldDescription = changes.body ? changes.body.from : '';
+#               const newDescription = issue.body;
+#               if (!project) {
+#                 console.log("This issue have not a project assigned")
+#                 return;
+#               }
+#               if (oldDescription !== newDescription) {
+#                 for (const scope of trackedTasks) {
+#                   let projectScopes = scope.projectsV2.nodes.map((p) => p.id)
+#                   let itemId = issueData.user.repository.projectsV2.nodes[0].items.nodes.filter(n => n.content.id === scope.id)[0]?.id
+#                   if (!projectScopes.includes(project.id)) {
+#                     await addIssueToProject(scope.id, project.id)
+#                     console.log(`Added issue #${scope.number} to project ${project.id}.`);
+#                   }
+#                   if (scope.id && itemId && betFieldId) {
+#                     await updateProjectFieldValue(project.id, itemId, betFieldId, {"text": betURL});
+#                     console.log(`Added betURL to issue #${scope.number}`);
+#                   }
+#                   if (scope.id && itemId && kindFieldId && scopeFieldOption) {
+#                     await updateProjectFieldValue(project.id, itemId, kindFieldId, {"singleSelectOptionId": scopeFieldOption});
+#                     console.log(`Added kind=scope to issue #${scope.number}`);
+#                   }
+#                   if (scope.id && itemId && cycleFieldId && cycleIterationId) {
+#                     await updateProjectFieldValue(project.id, itemId, cycleFieldId, {"iterationId": cycleIterationId});
+#                     console.log(`Added the same cycle as #${issue.number} to issue #${scope.number}`);
+#                   }
+#                   console.log(`scopeId`, scope.id, `itemId`, itemId, `betFieldId`, betFieldId)
+#                 }
+#               }
+#             }

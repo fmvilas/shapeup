@@ -1,0 +1,39 @@
+name: Issue Parser
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+
+jobs:
+  parse_issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Parse Issue Description
+        id: parse
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const regex = /(Bet\s+(\S+)#(\d+))/;
+            const description = context.payload.issue.body;
+            const match = regex.exec(description);
+
+            if (match) {
+              const issueNumber = match[3];
+              const repoUrl = `https://github.com/${context.payload.repository.full_name}`;
+
+              return {
+                issueNumber: issueNumber,
+                repoUrl: repoUrl
+              };
+            } else {
+              return {};
+            }
+
+      - name: Output Issue Number and Repo URL
+        run: |
+          echo "Issue Number: ${{ steps.parse.outputs.issueNumber }}"
+          echo "Repo URL: ${{ steps.parse.outputs.repoUrl }}"
