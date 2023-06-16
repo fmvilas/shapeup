@@ -6,11 +6,6 @@ on:
     types:
       - edited
       - opened
-  pull_requests:
-    types:
-      - edited
-      - opened
-
 
 jobs:
   parse_issue:
