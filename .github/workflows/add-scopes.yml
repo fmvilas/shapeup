@@ -105,9 +105,9 @@ jobs:
             }
             const currentScope = match[1].trim();
             const newTask = `- [ ] #${taskNumber}`;
+            console.log(trackedTasks, Number(taskNumber));
             if (trackedTasks.includes(Number(taskNumber))) {
               console.log("This issue already exists");
-              console.log(matchExistingIssue);
               return;
             }
             const newScope = `${currentScope}\n${newTask}`;
