@@ -32,12 +32,18 @@ jobs:
               const repo = repoFull.split('/')[1];
               const issueNumber = match[3];
               const repoUrl = `https://github.com/${repoFull}`;
-
-              return {
-                issueNumber: issueNumber,
+              const betIssueDescription = await github.rest.get({
                 owner: user,
                 repo: repo,
-                repoUrl: repoUrl
+                issue_number: issueNumber
+              })
+
+              return {
+                issueNumber,
+                owner: user,
+                repo,
+                repoUrl,
+                betIssueDescription
               };
             } else {
               return {};
@@ -60,12 +66,11 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { issueNumber, repo, owner, repoUrl } = ${{ steps.parse.outputs.result }}
+            const { issueNumber, repo, owner, repoUrl, betIssueDescription } = ${{ steps.parse.outputs.result }}
             const regex = /###?\s+Scope\s*\n([\s\S]*?)(?=###?|$)/;
-            const description = context.payload.issue ? context.payload.issue.body : context.payload.pull_request.body;
-            console.log(description);
+            console.log(betIssueDescription);
             console.log(issueNumber, repo, owner, repoUrl)
-            const match = description.match(regex);
+            const match = betIssueDescription.match(regex);
             if (!match) {
               console.log("Nothing to do in this issue");
               return
@@ -74,17 +79,15 @@ jobs:
             const currentScope = match[1].trim();
             const newTask = '- [ ] New Task';
             const newScope = `${currentScope}\n${newTask}`;
-            const newDescription = description.replace(currentScope, newScope);
+            const newBetDescription = betIssueDescription.replace(currentScope, newScope);
             if (!res) {
               console.log("No Bet linked to this issue")
               return
             }
-            if (context.payload.issue) {
-              await github.issues.update({
+            await github.issues.update({
                 owner,
                 repo,
                 issue_number: issueNumber,
-                body: newDescription
-              })
-            }
+                body: newBetDescription
+            })
 
