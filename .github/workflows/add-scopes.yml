@@ -61,8 +61,10 @@ jobs:
         with:
           script: |
             const { issueNumber, repo, owner, repoUrl } = ${{ steps.parse.outputs.result }}
-            const regex = /###? Scope\s*\n([\s\S]*?)(?=###?|$)/;
+            const regex = /###?\s+Scope\s*\n([\s\S]*?)(?=###?|$)/;
             const description = context.payload.issue ? context.payload.issue.body : context.payload.pull_request.body;
+            console.log(description);
+            console.log(issueNumber, repo, owner, repoUrl)
             const match = description.match(regex);
             console.log(match)
             const currentScope = match[1].trim();
