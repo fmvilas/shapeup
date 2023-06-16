@@ -1,6 +1,5 @@
 name: Add related issues
 
-
 on:
   issues:
     types:
