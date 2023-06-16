@@ -108,7 +108,7 @@ jobs:
               console.log("No Bet linked to this issue")
               return
             }
-            const mutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
+            const mutation = `mutation ($input: UpdateIssueInput!) {
                 updateIssue(input: $input) {
                     clientMutationId
                 }
