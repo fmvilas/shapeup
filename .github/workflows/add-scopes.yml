@@ -1,16 +1,21 @@
 name: Issue Parser
 
+
 on:
   issues:
     types:
-      - opened
       - edited
+      - opened
+  workflow_dispatch: {}
 
 jobs:
   parse_issue:
     runs-on: ubuntu-latest
-
     steps:
+      - name: View context attributes
+        uses: actions/github-script@v6
+        with:
+          script: console.log(context)
       - name: Parse Issue Description
         id: parse
         uses: actions/github-script@v6
