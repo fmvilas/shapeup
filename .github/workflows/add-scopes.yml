@@ -25,6 +25,7 @@ jobs:
             const regexSimple = /(Bet\s+(\S+)?#(\d+))/;
             const description = context.payload.issue.body;
             const match = regexSimple.exec(description);
+            let result = {}
             // Simple cases Bet #[number] and Bet User/Repo#[number]
             if (match) {
               const repoFull = match[2] ? match[2] : context.payload.repository.full_name;
@@ -51,11 +52,11 @@ jobs:
                 issue: issueNumber
               }
               try {
-                const result = await github.graphql(query, variables)
-                const {body, id} = result.user.repository.issue
+                const data= await github.graphql(query, variables)
+                const {body, id} = data.user.repository.issue
                 console.log(`betIssueDescription`, betIssueDescription);
 
-                return {
+                result = {
                   issueNumber,
                   owner,
                   repo,
@@ -63,12 +64,11 @@ jobs:
                   betIssueDescription: body,
                   issueNodeId: id
                 };
-                } else {
-                  return {};
-                }
               } catch (error) {
                 console.log(`Failed query for issue #${issueNumber}`, error);
               }
+
+              return result;
               
       - name: Output Issue Number and Repo URL
         id: output
