@@ -32,7 +32,7 @@ jobs:
               const repo = repoFull.split('/')[1];
               const issueNumber = match[3];
               const repoUrl = `https://github.com/${repoFull}`;
-              const betIssueDescription = await github.rest.get({
+              const betIssueDescription = await github.issues.get({
                 owner: user,
                 repo: repo,
                 issue_number: issueNumber
