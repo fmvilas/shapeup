@@ -66,6 +66,10 @@ jobs:
             console.log(description);
             console.log(issueNumber, repo, owner, repoUrl)
             const match = description.match(regex);
+            if (!match) {
+              console.log("Nothing to do in this issue");
+              return
+            }
             console.log(match)
             const currentScope = match[1].trim();
             const newTask = '- [ ] New Task';
