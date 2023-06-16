@@ -26,7 +26,7 @@ jobs:
             const match = regex.exec(description);
 
             if (match) {
-              const repo = match[2] ? match[2] : ${context.payload.repository.full_name};
+              const repo = match[2] ? match[2] : context.payload.repository.full_name;
               const issueNumber = match[3];
               const repoUrl = `https://github.com/${repo}`;
 
