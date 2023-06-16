@@ -27,9 +27,9 @@ jobs:
             const match = regexSimple.exec(description);
             if (!match) {
               console.log("Nothing to do in this issue");
-              return
+              return null;
             }
-            let result = {};
+            let result = null;
             const repoFull = match[2] ? match[2] : context.payload.repository.full_name;
             const owner = repoFull.split('/')[0];
             const repo = repoFull.split('/')[1];
@@ -69,24 +69,21 @@ jobs:
               console.log(`Failed query for issue #${issueNumber}`, error);
             }
 
-            return result;
-              
+            return result;    
       - name: Output Issue Number and Repo URL
         id: output
         uses: actions/github-script@v6
         with:
           script: |
             const res = ${{ steps.parse.outputs.result }}
-            if (!res) {
-              console.log("No Bet linked to this issue")
-              return
-            }
             const issueNumber = res.issueNumber
             const repo = res.repoUrl
             console.log(res)
+        if: ${{ steps.parse.outputs.result }}
       - name: Add The issue to the Bet
         id: add-bet
         uses: actions/github-script@v6
+        if: ${{ steps.parse.outputs.result }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
