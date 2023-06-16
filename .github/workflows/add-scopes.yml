@@ -30,7 +30,7 @@ jobs:
               const repoFull = match[2] ? match[2] : context.payload.repository.full_name;
               const owner = repoFull.split('/')[0];
               const repo = repoFull.split('/')[1];
-              const issueNumber = match[3];
+              const issueNumber = Number(match[3]);
               const repoUrl = `https://github.com/${repoFull}`;
               const query = `
                     query($owner: String!, $repo: String!, $issue: Int!) { 
