@@ -25,50 +25,52 @@ jobs:
             const regexSimple = /(Bet\s+(\S+)?#(\d+))/;
             const description = context.payload.issue.body;
             const match = regexSimple.exec(description);
-            let result = {}
-            // Simple cases Bet #[number] and Bet User/Repo#[number]
-            if (match) {
-              const repoFull = match[2] ? match[2] : context.payload.repository.full_name;
-              const owner = repoFull.split('/')[0];
-              const repo = repoFull.split('/')[1];
-              const issueNumber = Number(match[3]);
-              const repoUrl = `https://github.com/${repoFull}`;
-              const query = `
-                    query($owner: String!, $repo: String!, $issue: Int!) { 
-                      user(login: $owner) {
-                          repository(name: $repo) {
-                              issue(number: $issue) {
-                                  id
-                                  title
-                                  body
-                              }
-                          }
-                      }
-                  }
-              `;
-              const variables = {
+            if (!match) {
+              console.log("Nothing to do in this issue");
+              return
+            }
+            let result = {};
+            const repoFull = match[2] ? match[2] : context.payload.repository.full_name;
+            const owner = repoFull.split('/')[0];
+            const repo = repoFull.split('/')[1];
+            const issueNumber = Number(match[3]);
+            const repoUrl = `https://github.com/${repoFull}`;
+            const query = `
+                  query($owner: String!, $repo: String!, $issue: Int!) { 
+                    user(login: $owner) {
+                        repository(name: $repo) {
+                            issue(number: $issue) {
+                                id
+                                title
+                                body
+                            }
+                        }
+                    }
+                }
+            `;
+            const variables = {
+              owner,
+              repo,
+              issue: issueNumber
+            }
+            try {
+              const data= await github.graphql(query, variables)
+              const {body, id} = data.user.repository.issue
+              console.log(`betIssueDescription`, betIssueDescription);
+
+              result = {
+                issueNumber,
                 owner,
                 repo,
-                issue: issueNumber
-              }
-              try {
-                const data= await github.graphql(query, variables)
-                const {body, id} = data.user.repository.issue
-                console.log(`betIssueDescription`, betIssueDescription);
+                repoUrl,
+                betIssueDescription: body,
+                issueNodeId: id
+              };
+            } catch (error) {
+              console.log(`Failed query for issue #${issueNumber}`, error);
+            }
 
-                result = {
-                  issueNumber,
-                  owner,
-                  repo,
-                  repoUrl,
-                  betIssueDescription: body,
-                  issueNodeId: id
-                };
-              } catch (error) {
-                console.log(`Failed query for issue #${issueNumber}`, error);
-              }
-
-              return result;
+            return result;
               
       - name: Output Issue Number and Repo URL
         id: output
