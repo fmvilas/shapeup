@@ -54,10 +54,9 @@ jobs:
               issue: issueNumber
             }
             try {
-              const data= await github.graphql(query, variables)
+              const data = await github.graphql(query, variables)
               const {body, id} = data.user.repository.issue
-              console.log(`betIssueDescription`, betIssueDescription);
-
+              console.log(body, id)
               result = {
                 issueNumber,
                 owner,
