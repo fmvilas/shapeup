@@ -50,8 +50,13 @@ jobs:
                 repo,
                 issue: issueNumber
               }
-              const result = await github.graphql(query, variables)
-              const betIssueDescription = result.user.repository.issue?.body
+              try {
+                const result = await github.graphql(query, variables)
+              } catch (error) {
+                console.log(`Failed query for issue #${issueNumber}`, error);
+                return
+              }
+              const {body, id} = result.user.repository.issue
 
               console.log(`betIssueDescription`, betIssueDescription);
 
@@ -60,7 +65,8 @@ jobs:
                 owner,
                 repo,
                 repoUrl,
-                betIssueDescription
+                betIssueDescription: body,
+                issueNodeId: id
               };
             } else {
               return {};
@@ -82,8 +88,9 @@ jobs:
         id: add-bet
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { issueNumber, repo, owner, repoUrl, betIssueDescription } = ${{ steps.parse.outputs.result }}
+            const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId } = ${{ steps.parse.outputs.result }}
             const regex = /###?\s+Scope\s*\n([\s\S]*?)(?=###?|$)/;
             console.log(betIssueDescription);
             console.log(issueNumber, repo, owner, repoUrl)
@@ -97,14 +104,24 @@ jobs:
             const newTask = '- [ ] New Task';
             const newScope = `${currentScope}\n${newTask}`;
             const newBetDescription = betIssueDescription.replace(currentScope, newScope);
-            if (!res) {
+            if (!match) {
               console.log("No Bet linked to this issue")
               return
             }
-            await github.issues.update({
-                owner,
-                repo,
-                issue_number: issueNumber,
-                body: newBetDescription
-            })
+            const mutation = `mutation ($input: UpdateProjectV2ItemFieldValueInput!) {
+                updateIssue(input: $input) {
+                    clientMutationId
+                }
+              }`;
+            const variables = {
+                input : {
+                  id: issueNodeId,
+                  body: newBetDescription
+                }
+              };
+            try {
+              await github.graphql(mutation, variables);
+            } catch (error) {
+              console.log(`Failed mutation for issue #${issueNodeId}`, error);
+            }
 
