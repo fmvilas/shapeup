@@ -55,9 +55,10 @@ jobs:
                   user: user,
                   repo: repo,
                   repoUrl: repoUrl
+                };
               } else {
                  return {};
-               }
+              }
             }
 
       - name: Output Issue Number and Repo URL
