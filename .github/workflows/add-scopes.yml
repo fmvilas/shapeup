@@ -6,7 +6,6 @@ on:
     types:
       - edited
       - opened
-  workflow_dispatch: {}
 
 jobs:
   parse_issue:
@@ -40,5 +39,5 @@ jobs:
 
       - name: Output Issue Number and Repo URL
         run: |
-          echo "Issue Number: ${{ steps.parse.outputs.issueNumber }}"
-          echo "Repo URL: ${{ steps.parse.outputs.repoUrl }}"
+          echo "Issue Number: ${{ steps.parse.outputs.result.issueNumber }}"
+          echo "Repo URL: ${{ steps.parse.outputs.result.repoUrl }}"
