@@ -43,6 +43,11 @@ jobs:
                                 id
                                 title
                                 body
+                                trackedIssues(first:100) {
+                                  nodes {
+                                    number
+                                  }
+                                }
                             }
                         }
                     }
@@ -55,7 +60,7 @@ jobs:
             }
             try {
               const data = await github.graphql(query, variables)
-              const {body, id} = data.user.repository.issue
+              const {body, id, trackedIssues} = data.user.repository.issue
               console.log(body, id)
               result = {
                 issueNumber,
@@ -63,7 +68,8 @@ jobs:
                 repo,
                 repoUrl,
                 betIssueDescription: body,
-                issueNodeId: id
+                issueNodeId: id,
+                trackedTasks : trackedIssues.nodes.map(issue => issue.number)
               };
             } catch (error) {
               console.log(`Failed query for issue #${issueNumber}`, error);
@@ -87,7 +93,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId } = ${{ steps.parse.outputs.result }};
+            const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId, trackedTasks } = ${{ steps.parse.outputs.result }};
             const regex = /###?\s+Scope\s*\n([\s\S]*?)(?=###?|$)/;
             console.log(betIssueDescription);
             console.log(issueNumber, repo, owner, repoUrl)
@@ -99,8 +105,9 @@ jobs:
             }
             const currentScope = match[1].trim();
             const newTask = `- [ ] #${taskNumber}`;
-            if (!betIssueDescription.match(`/-\s+\[[ x]\]\s+#${taskNumber}+/`)) {
+            if (trackedTasks.includes(Number(taskNumber))) {
               console.log("This issue already exists");
+              console.log(matchExistingIssue);
               return;
             }
             const newScope = `${currentScope}\n${newTask}`;
