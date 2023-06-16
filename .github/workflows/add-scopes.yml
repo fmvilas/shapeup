@@ -20,6 +20,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: json
           script: |
             const regex = /(Bet\s+(\S+)?#(\d+))/;
             const description = context.payload.issue.body;
@@ -36,10 +37,19 @@ jobs:
                 repoUrl: repoUrl
               };
             } else {
-              return {};
+              return null;
             }
 
       - name: Output Issue Number and Repo URL
-        run: |
-          echo "Issue Number: ${{ steps.parse.outputs.result.issueNumber }}"
-          echo "Repo URL: ${{ steps.parse.outputs.result.repoUrl }}"
+        id: output
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const res = ${{ steps.parse.outputs.result }}
+            if (!res) {
+              console.log("No Bet linked to this issue")
+              return
+            }
+            const issueNumber = res.issueNumber
+            const repo = res.repoUrl
+            console.log(res)
