@@ -7,7 +7,7 @@ on:
       - opened
 
 jobs:
-  parse_issue:
+  add_related_issues:
     runs-on: ubuntu-latest
     steps:
       - name: View context attributes
