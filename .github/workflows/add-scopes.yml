@@ -24,7 +24,8 @@ jobs:
             const regex = /(Bet\s+(\S+)?#(\d+))/;
             const description = context.payload.issue.body;
             const match = regex.exec(description);
-
+            console.log(match)
+            console.log(description)
             if (match) {
               const repo = match[2] ? match[2] : context.payload.repository.full_name;
               const issueNumber = match[3];
