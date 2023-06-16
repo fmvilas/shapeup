@@ -63,7 +63,7 @@ jobs:
             const { issueNumber, repo, owner, repoUrl } = ${{ steps.parse.outputs.result }}
             const regex = /###? Scope\s*\n([\s\S]*?)(?=###?|$)/;
             const description = context.payload.issue ? context.payload.issue.body : context.payload.pull_request.body;
-            const match = text.match(regex);
+            const match = description.match(regex);
             console.log(match)
             const currentScope = match[1].trim();
             const newTask = '- [ ] New Task';
