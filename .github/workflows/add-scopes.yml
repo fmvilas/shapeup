@@ -90,7 +90,7 @@ jobs:
             const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId } = ${{ steps.parse.outputs.result }};
             const regex = /###?\s+Scope\s*\n([\s\S]*?)(?=###?|$)/;
             console.log(betIssueDescription);
-            console.log(issueNumber, repo, owner, repoUrl)l
+            console.log(issueNumber, repo, owner, repoUrl)
             const match = betIssueDescription.match(regex);
             const taskNumber = context.payload.issue.number;
             if (!match) {
