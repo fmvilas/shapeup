@@ -52,25 +52,24 @@ jobs:
               }
               try {
                 const result = await github.graphql(query, variables)
+                const {body, id} = result.user.repository.issue
+                console.log(`betIssueDescription`, betIssueDescription);
+
+                return {
+                  issueNumber,
+                  owner,
+                  repo,
+                  repoUrl,
+                  betIssueDescription: body,
+                  issueNodeId: id
+                };
+                } else {
+                  return {};
+                }
               } catch (error) {
                 console.log(`Failed query for issue #${issueNumber}`, error);
-                return
               }
-              const {body, id} = result.user.repository.issue
-
-              console.log(`betIssueDescription`, betIssueDescription);
-
-              return {
-                issueNumber,
-                owner,
-                repo,
-                repoUrl,
-                betIssueDescription: body,
-                issueNodeId: id
-              };
-            } else {
-              return {};
-            }
+              
       - name: Output Issue Number and Repo URL
         id: output
         uses: actions/github-script@v6
