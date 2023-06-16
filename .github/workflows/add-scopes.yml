@@ -22,7 +22,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: json
           script: |
-            const regexSimple = /(Bet\s+(\S+)?#(\d+))/;
+            const regexSimple = /(Related\sto\s+(\S+)?#(\d+))/;
             const description = context.payload.issue.body;
             const match = regexSimple.exec(description);
             if (!match) {
