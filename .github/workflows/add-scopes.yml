@@ -41,24 +41,25 @@ jobs:
                 repoUrl: repoUrl
               };
             } else {
-              // Case 3: Bet https://github.com/user/repo/issues/[number]
-              const regexUrl = /(Bet\s+?https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/issues\/(\d+))/;
-              const match = regexSimple.exec(description);
-              if (match) {
-                const issueNumber = match[4];
-                const user =  match[2];
-                const repo = match[3];
-                const repoUrl = `https://github.com/${user}/${repo}`;
+              # // Case 3: Bet https://github.com/user/repo/issues/[number]
+              # const regexUrl = /(Bet\s+?https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/issues\/(\d+))/;
+              # const match = regexSimple.exec(description);
+              # if (match) {
+              #   const issueNumber = match[4];
+              #   const user =  match[2];
+              #   const repo = match[3];
+              #   const repoUrl = `https://github.com/${user}/${repo}`;
 
-                return {
-                  issueNumber: issueNumber,
-                  user: user,
-                  repo: repo,
-                  repoUrl: repoUrl
-                };
-              } else {
-                 return {};
-              }
+              #   return {
+              #     issueNumber: issueNumber,
+              #     user: user,
+              #     repo: repo,
+              #     repoUrl: repoUrl
+              #   };
+              # } else {
+              #    return {};
+              # }
+              return {};
             }
 
       - name: Output Issue Number and Repo URL
