@@ -10,10 +10,6 @@ jobs:
   add_related_issues:
     runs-on: ubuntu-latest
     steps:
-      - name: View context attributes
-        uses: actions/github-script@v6
-        with:
-          script: console.log(context)
       - name: Parse Issue Description
         id: parse
         uses: actions/github-script@v6
@@ -60,7 +56,6 @@ jobs:
             try {
               const data = await github.graphql(query, variables)
               const {body, id, trackedIssues} = data.user.repository.issue
-              console.log(body, id)
               result = {
                 issueNumber,
                 owner,
@@ -75,16 +70,6 @@ jobs:
             }
 
             return result;    
-      - name: Output Issue Number and Repo URL
-        id: output
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const res = ${{ steps.parse.outputs.result }}
-            const issueNumber = res.issueNumber
-            const repo = res.repoUrl
-            console.log(res)
-        if: ${{ steps.parse.outputs.result }}
       - name: Add The issue to the Bet
         id: add-bet
         uses: actions/github-script@v6
@@ -93,18 +78,17 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId, trackedTasks } = ${{ steps.parse.outputs.result }};
-            const regex = /###?\s+Scope\s*\n([\s\S]*?)(?=###?|$)/;
-            console.log(betIssueDescription);
-            console.log(issueNumber, repo, owner, repoUrl)
+            const regex = /###?\s+Scope([\s\S]*?)(?=\n###? \w|\n$)/;
             const match = betIssueDescription.match(regex);
             const taskNumber = context.payload.issue.number;
             if (!match) {
               console.log("Nothing to do in this issue");
               return;
             }
-            const currentScope = match[1].trim();
+            const taskRegex = /- \[(x| )\] (.+)/gm
+            const tasksOnly = match[1].match(taskRegex);
+            const currentScope = tasksOnly.join('\n').trim();
             const newTask = `- [ ] #${taskNumber}`;
-            console.log(trackedTasks, Number(taskNumber));
             if (trackedTasks.includes(Number(taskNumber))) {
               console.log("This issue already exists");
               return;
@@ -131,4 +115,3 @@ jobs:
             } catch (error) {
               console.log(`Failed mutation for issue #${issueNodeId}`, error);
             }
-
