@@ -77,6 +77,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            console.log(`results`, ${{ steps.parse.outputs.result }});
             const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId, trackedTasks } = ${{ steps.parse.outputs.result }};
             const regex = /###?\s+Scope([\s\S]*?)(?=\n###? \w|\n$)/;
             const match = betIssueDescription.match(regex);
