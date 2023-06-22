@@ -79,7 +79,7 @@ jobs:
           script: |
             console.log(`results`, ${{ steps.parse.outputs.result }});
             const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId, trackedTasks } = ${{ steps.parse.outputs.result }};
-            const regex = /###?\s+Scope([\s\S]*?)(?=\n###? \w|\n$)/;
+            const regex = /###?\sScope([^-]+)((-\s+\[[\sX|x]\]\s*#?.+\s*)+)/;
             const match = betIssueDescription.match(regex);
             const taskNumber = context.payload.issue.number;
             if (!match) {
@@ -87,10 +87,7 @@ jobs:
               return;
             }
             console.log(`match`, match);
-            const taskRegex = /- \[(x| )\] (.+)/gm
-            const tasksOnly = match[1].match(taskRegex);
-            console.log(tasksOnly);
-            const currentScope = tasksOnly.join('\n').trim();
+            const currentScope = match[2].trim();
             const newTask = `- [ ] #${taskNumber}`;
             if (trackedTasks.includes(Number(taskNumber))) {
               console.log("This issue already exists");
@@ -98,10 +95,6 @@ jobs:
             }
             const newScope = `${currentScope}\n${newTask}`;
             const newBetDescription = betIssueDescription.replace(currentScope, newScope);
-            if (!match) {
-              console.log("No Bet linked to this issue")
-              return
-            }
             const mutation = `mutation ($input: UpdateIssueInput!) {
                 updateIssue(input: $input) {
                     clientMutationId
