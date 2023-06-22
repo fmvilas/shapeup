@@ -86,8 +86,10 @@ jobs:
               console.log("Nothing to do in this issue");
               return;
             }
+            console.log(`match`, match);
             const taskRegex = /- \[(x| )\] (.+)/gm
             const tasksOnly = match[1].match(taskRegex);
+            console.log(tasksOnly);
             const currentScope = tasksOnly.join('\n').trim();
             const newTask = `- [ ] #${taskNumber}`;
             if (trackedTasks.includes(Number(taskNumber))) {
