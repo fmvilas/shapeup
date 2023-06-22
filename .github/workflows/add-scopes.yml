@@ -77,8 +77,12 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(`results`, ${{ steps.parse.outputs.result }});
-            const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId, trackedTasks } = ${{ steps.parse.outputs.result }};
+            const results = ${{ steps.parse.outputs.result }};
+            if (!results) {
+              console.log("Nothing to do in this issue - outputs results is null");
+              return;
+            }
+            const { issueNumber, repo, owner, repoUrl, betIssueDescription, issueNodeId, trackedTasks } = results;
             const regex = /###?\sScope([^-]+)((-\s+\[[\sX|x]\]\s*#?.+\s*)+)/;
             const match = betIssueDescription.match(regex);
             const taskNumber = context.payload.issue.number;
@@ -86,7 +90,6 @@ jobs:
               console.log("Nothing to do in this issue");
               return;
             }
-            console.log(`match`, match);
             const currentScope = match[2].trim();
             const newTask = `- [ ] #${taskNumber}`;
             if (trackedTasks.includes(Number(taskNumber))) {
