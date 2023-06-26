@@ -33,8 +33,7 @@ body:
     attributes:
       label: Scope
       description: "Describe a list of tasks or issues that need to be done (you don't need to have an exhaustive list of all the tasks in the beginning)"
-      placholder: | 
-        - [ ] Task
+      placholder: Task
     validations:
       required: true
   - type: textarea
