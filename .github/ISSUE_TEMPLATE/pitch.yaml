@@ -45,11 +45,11 @@ body:
       label: Out of bounds
       description: "What won't be part of the scope"
     validations:
-      required: true
+      required: false
   - type: textarea
     id: success
     attributes:
       label: Success criteria
       description: "How do we know that this will be a success?"
     validations:
-      required: true
+      required: false
