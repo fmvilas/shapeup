@@ -18,4 +18,5 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(context)
+            console.log(context.pull_request.title)
+            console.log(context.pull_request.labels)
