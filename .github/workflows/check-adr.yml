@@ -1,0 +1,21 @@
+name: PR Validation Workflow
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - labeled
+      - unlabeled
+
+jobs:
+  validate_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR label and title
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log(github.context);
