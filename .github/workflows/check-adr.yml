@@ -21,6 +21,6 @@ jobs:
             const title = context.payload.pull_request.title;
             const labels = context.payload.pull_request.labels;
             const hasAdrLabel = labels.some(label => label.name === 'kind/adr');
-            const startsWithAdr = /^\[ADR-\d+\]/.test(prTitle);
+            const startsWithAdr = /^\[ADR-\d+\]/.test(title);
             console.log(`title : ${title} - labels: ${labels} - hasAdrLabel: ${hasAdrLabel} - startsWithAdr: ${startsWithAdr}`);
             
