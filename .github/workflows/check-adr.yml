@@ -1,4 +1,4 @@
-name: PR Validation Workflow
+name: PR ADR Validation Workflow
 
 on:
   pull_request:
