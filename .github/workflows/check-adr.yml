@@ -17,11 +17,18 @@ jobs:
       - name: Check PR label and title
         uses: actions/github-script@v6
         with:
+          result-encoding: string
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const title = context.payload.pull_request.title;
             const labels = context.payload.pull_request.labels;
             const hasAdrLabel = labels.some(label => label.name === 'kind/adr');
-            const startsWithAdr = /^\chore : [ADR-\d{4}\]/.test(title);
+            const re = /^chore:\s*\[ADR-\d{4}\].*/;
+            const startsWithAdr = title.match(re) !== null;
             console.log(`title : ${title} - labels: ${labels} - hasAdrLabel: ${hasAdrLabel} - startsWithAdr: ${startsWithAdr}`);
+            if (hasAdrLabel && !startsWithAdr) {
+              return `The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits`;
+              exit 1;
+            }
+            return
             
