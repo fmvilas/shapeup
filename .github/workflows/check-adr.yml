@@ -18,7 +18,7 @@ jobs:
         uses: actions/github-script@v6
         id: lint_title_adr
         with:
-          result-encoding: string
+          result-encoding: json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const title = context.payload.pull_request.title;
@@ -45,7 +45,7 @@ jobs:
               throw new Error(result)
             }
             return true
-      - if: ${{ steps.lint_title_adr.outputs.result != "null" }}
+      - if: ${{ steps.lint_title_adr.outputs.result != null }}
         uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
