@@ -58,8 +58,7 @@ jobs:
             ```
              ${{ steps.lint_title_adr.outputs.result}}
             ```
-
-      Delete a previous comment when the issue has been resolved
+      # Delete a previous comment when the issue has been resolved
       - if: steps.lint_title_adr.outputs.result == ''
         uses: marocchino/sticky-pull-request-comment@v2
         with:
