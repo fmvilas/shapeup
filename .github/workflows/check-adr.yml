@@ -32,6 +32,7 @@ jobs:
               throw new Error("The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits")
             }
             core.setOutput('result', "test");
+            throw new Error("The PR Title");
       - name: Debug
         uses: actions/github-script@v6
         id: lint_title_adr_debug
