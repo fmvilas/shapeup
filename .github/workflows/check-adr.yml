@@ -31,20 +31,20 @@ jobs:
               return "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits"
             }
             return ''
-      - name: Debug
-        uses: actions/github-script@v6
-        id: lint_title_adr_check
-        with:
-          result-encoding: string
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const result = ${{ steps.lint_title_adr.outputs.result }}
-            console.log(`result is `, result)
-            console.log(typeof result)
-            if (result != null) {
-              throw new Error(result)
-            }
-            return true
+      # - name: Debug
+      #   uses: actions/github-script@v6
+      #   id: lint_title_adr_check
+      #   with:
+      #     result-encoding: string
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const result = ${{ steps.lint_title_adr.outputs.result }}
+      #       console.log(`result is `, result)
+      #       console.log(typeof result)
+      #       if (result != null) {
+      #         throw new Error(result)
+      #       }
+      #       return true
       - if: steps.lint_title_adr.outputs.result != ''
         uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
