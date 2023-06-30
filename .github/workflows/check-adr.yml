@@ -66,10 +66,12 @@ jobs:
           delete: true
       - name: Checkout repo
         uses: actions/checkout@v3
-      - uses: danieljimeneznz/ensure-files-changed@v4.1.0
+      - name: Check commits
+        uses: danieljimeneznz/ensure-files-changed@v4.1.0
         with:
           require-changes-to: |
             doc/adr/1234-*.md
+            README.md
           prevent-changes-to: |
             *
           token: ${{ secrets.GITHUB_TOKEN }}
