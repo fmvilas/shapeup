@@ -41,7 +41,7 @@ jobs:
             const result = ${{ steps.lint_title_adr.outputs.result }}
             console.log(result)
             console.log(typeof result)
-            if (!result) {
+            if (result != null) {
               throw new Error(result)
             }
             return true
