@@ -38,12 +38,10 @@ jobs:
           result-encoding: string
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { success, error } = ${{ steps.lint_title_adr.outputs.result }}
-            console.log(success === true)
-            console.log(success == true)
-            console.log(${{ steps.lint_title_adr.outputs.result }})
-            console.log(typeof success)
-            if (!success) {
+            const result = ${{ steps.lint_title_adr.outputs.result }}
+            console.log(result)
+            console.log(typeof result)
+            if (!result) {
               throw new Error(error)
             }
             return true
