@@ -38,7 +38,7 @@ jobs:
         if: always() && (steps.lint_title_adr.outputs.result != null)
         with:
           header: pr-title-lint-adr-error
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           message: |
             Hey there and thank you for opening this ADR pull request! 👋🏼
             The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits.
@@ -47,7 +47,7 @@ jobs:
       - if: ${{ steps.lint_title_adr.outputs.result == null }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           header: pr-title-lint-error
           delete: true
             
