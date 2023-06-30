@@ -66,20 +66,28 @@ jobs:
           delete: true
       # Check commit changes
       - name: Check Commit Changes
-        uses: actions/github-script@v6
-        with:
-          result-encoding: json
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            console.log(github.event.commits);
-            const commits = context.payload.event.commits;
+        run: |
+          for file in "${{ github.event.commits[0].added }}"; do
+            echo "Added File: $file"
+            if [[ ! $file =~ ^doc/adr/1234-title\.md ]]; then
+              echo "Commit changes must only concern files starting with doc/adr/1234-title.md"
+              exit 1
+            fi
+          done
 
-            const commitFiles = commits.data[0].files.map(file => file.filename);
-            console.log('Commit Files:', commitFiles);
+          for file in "${{ github.event.commits[0].modified }}"; do
+            echo "Modified File: $file"
+            if [[ ! $file =~ ^doc/adr/1234-title\.md ]]; then
+              echo "Commit changes must only concern files starting with doc/adr/1234-title.md"
+              exit 1
+            fi
+          done
 
-            const isDocAdrFile = commitFiles.every(file => file.startsWith('doc/adr/'));
-            console.log('Is Doc ADR File:', isDocAdrFile);
-            if (!isDocAdrFile) {
-              throw new Error('Commit changes must only concern files starting with doc/adr/');
-            }
+          for file in "${{ github.event.commits[0].removed }}"; do
+            echo "Removed File: $file"
+            if [[ ! $file =~ ^doc/adr/1234-title\.md ]]; then
+              echo "Commit changes must only concern files starting with doc/adr/1234-title.md"
+              exit 1
+            fi
+          done
             
