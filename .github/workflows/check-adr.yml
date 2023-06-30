@@ -28,10 +28,10 @@ jobs:
             const startsWithAdr = (title.match(re) !== null);
             console.log(`title : ${title} - labels: ${labels} - hasAdrLabel: ${hasAdrLabel} - startsWithAdr: ${startsWithAdr}`);
             if (hasAdrLabel && !startsWithAdr) {
-              console.log("The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits");
-              return "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits";
+              core.setOutput('result', "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits");
+              throw new Error("The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits")
             }
-            return null;
+            core.setOutput('result', null);
       - uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
