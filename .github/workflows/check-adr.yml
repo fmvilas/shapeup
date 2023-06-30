@@ -45,8 +45,8 @@ jobs:
               throw new Error(result)
             }
             return true
-      - uses: marocchino/sticky-pull-request-comment@v2
-        if: (${{ steps.lint_title_adr.outputs.result }} != null)
+      - if: (${{ steps.lint_title_adr.outputs.result }} !== null)
+        uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
         with:
@@ -60,7 +60,7 @@ jobs:
             ```
 
       # Delete a previous comment when the issue has been resolved
-      - if: (${{ steps.lint_title_adr.outputs.result }} == null)
+      - if: (${{ steps.lint_title_adr.outputs.result }} === null)
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
