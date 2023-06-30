@@ -75,8 +75,8 @@ jobs:
         uses: actions/github-script@v6
         id: check_changed_files
         with:
-          result-encoding: string
+          result-encoding: json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const changedFiles = ${{ steps.changed_files.outputs.all_changed_files }}
-            console.log(`changedFiles`, changedFiles)
+            const changedFiles = ${{ steps.changed_files.outputs }};
+            console.log(`changedFiles`, changedFiles);
