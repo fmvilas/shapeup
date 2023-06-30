@@ -54,7 +54,7 @@ jobs:
             }
             return true
       - uses: marocchino/sticky-pull-request-comment@v2
-        if: always() && steps.lint_title_adr_check.outputs.result == false
+        if: always() && (steps.lint_title_adr.outputs.result.success == false)
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
         with:
@@ -65,7 +65,7 @@ jobs:
             The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits.
 
       # Delete a previous comment when the issue has been resolved
-      - if: steps.lint_title_adr_check.outputs.result == true
+      - if: ${{ steps.lint_title_adr.outputs.result.success == true }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
