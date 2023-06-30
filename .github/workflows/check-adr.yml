@@ -37,23 +37,23 @@ jobs:
                 success: true,
                 error: ""
             } 
-      # - name: Debug
-      #   uses: actions/github-script@v6
-      #   id: lint_title_adr_check
-      #   with:
-      #     result-encoding: string
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |
-      #       const { success, error } = ${{ steps.lint_title_adr.outputs.result }}
-      #       console.log(success === true)
-      #       console.log(success == true)
-      #       console.log(${{ steps.lint_title_adr.outputs.result }})
-      #       console.log(typeof success)
-      #       if (!success) {
-      #         throw new Error(error)
-      #       }
+      - name: Debug
+        uses: actions/github-script@v6
+        id: lint_title_adr_check
+        with:
+          result-encoding: string
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { success, error } = ${{ steps.lint_title_adr.outputs.result }}
+            console.log(success === true)
+            console.log(success == true)
+            console.log(${{ steps.lint_title_adr.outputs.result }})
+            console.log(typeof success)
+            if (!success) {
+              throw new Error(error)
+            }
       - uses: marocchino/sticky-pull-request-comment@v2
-        if: always() && !steps.lint_title_adr.outputs.result.success
+        if: always() && steps.lint_title_adr.outputs.result.success == false
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
         with:
@@ -64,7 +64,7 @@ jobs:
             The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits.
 
       # Delete a previous comment when the issue has been resolved
-      - if: steps.lint_title_adr.outputs.result.success
+      - if: steps.lint_title_adr.outputs.result.success == true
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
