@@ -33,7 +33,7 @@ jobs:
             }
             try {
               throw new Error("The PR Title");
-            } catch (error) {
+            } catch {
               console.log("error");
               return "error"
             }
