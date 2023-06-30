@@ -71,10 +71,10 @@ jobs:
         uses: tj-actions/changed-files@v37
         with:
           json: "true"
-      - name: Display changed files
-        uses: actions/github-script@v6
-        with:
-          result-encoding: string
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            console.log(${{ steps.changed-files.outputs.all_changed_files }})
+      # - name: Display changed files
+      #   uses: actions/github-script@v6
+      #   with:
+      #     result-encoding: string
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       console.log(${{ steps.changed-files.outputs.all_changed_files }})
