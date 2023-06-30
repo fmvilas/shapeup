@@ -45,7 +45,7 @@ jobs:
               throw new Error(result)
             }
             return true
-      - if: steps.lint_title_adr.outputs.result !== null
+      - if: steps.lint_title_adr.outputs.result != null
         uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
