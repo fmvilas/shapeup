@@ -66,9 +66,10 @@ jobs:
           delete: true
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Check Exact Files Changed
-        uses: fforres/validate-changed-files@v1.0.3
+      - uses: danieljimeneznz/ensure-files-changed@v4.1.0
         with:
-          file-patterns: '["doc/adr/0001-.*\.md"]'
-          comparison-type: "file-patterns"
+          require-changes-to: |
+            doc/adr/1234-*.md
+          prevent-changes-to: |
+            *
           token: ${{ secrets.GITHUB_TOKEN }}
