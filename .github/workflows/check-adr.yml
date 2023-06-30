@@ -67,11 +67,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Check commits
-        uses: danieljimeneznz/ensure-files-changed@v4.1.0
+        uses: fforres/validate-changed-files@v1.0.3
         with:
-          require-changes-to: |
-            doc/adr/1234-*.md
-            README.md
-          prevent-changes-to: |
-            *
+          file-patterns: '["doc/adr/1234-test.md"]'
+          comparison-type: "exact"
           token: ${{ secrets.GITHUB_TOKEN }}
