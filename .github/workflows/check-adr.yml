@@ -78,4 +78,4 @@ jobs:
           result-encoding: string
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(${{ steps.changed_files.outputs.all_changed_files }})
+            console.log("test")
