@@ -32,6 +32,14 @@ jobs:
               throw new Error("The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits")
             }
             core.setOutput('result', null);
+      - name: Debug
+        uses: actions/github-script@v6
+        id: lint_title_adr_debug
+        with:
+          result-encoding: string
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log(steps.lint_title_adr.outputs.result)
       - uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
