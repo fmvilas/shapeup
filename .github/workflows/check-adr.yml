@@ -64,4 +64,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           header: pr-title-lint-adr-error
           delete: true
+      # Check commit changes
+      - name: Check Commit Changes
+        uses: actions/github-script@v6
+        with:
+          result-encoding: json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const commits = context.event.commits;
+
+            const commitFiles = commits.data[0].files.map(file => file.filename);
+            console.log('Commit Files:', commitFiles);
+
+            const isDocAdrFile = commitFiles.every(file => file.startsWith('doc/adr/'));
+            console.log('Is Doc ADR File:', isDocAdrFile);
+            if (!isDocAdrFile) {
+              throw new Error('Commit changes must only concern files starting with doc/adr/');
+            }
             
