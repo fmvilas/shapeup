@@ -42,7 +42,7 @@ jobs:
             console.log(result)
             console.log(typeof result)
             if (!result) {
-              throw new Error(error)
+              throw new Error(result)
             }
             return true
       - uses: marocchino/sticky-pull-request-comment@v2
