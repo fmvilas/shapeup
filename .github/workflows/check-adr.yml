@@ -18,7 +18,7 @@ jobs:
         uses: actions/github-script@v6
         id: lint_title_adr
         with:
-          result-encoding: string
+          result-encoding: json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const title = context.payload.pull_request.title;
@@ -28,26 +28,24 @@ jobs:
             const startsWithAdr = (title.match(re) !== null);
             console.log(`title : ${title} - labels: ${labels} - hasAdrLabel: ${hasAdrLabel} - startsWithAdr: ${startsWithAdr}`);
             if (hasAdrLabel && !startsWithAdr) {
-              core.setOutput('result', "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits");
-              throw new Error("The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits")
+              return {
+                success: false,
+                error: "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits"
+              }
             }
-            try {
-              throw new Error("The PR Title");
-            } catch {
-              console.log("error");
-              return "error"
-            }
-            return null
-            
+            return {
+                success: true,
+                error: ""
+            } 
       - name: Debug
         uses: actions/github-script@v6
-        id: lint_title_adr_debug
+        id: lint_title_adr_check
         with:
           result-encoding: string
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log(${{ steps.lint_title_adr.outputs.result }})
-            console.log(${{ steps.lint_title_adr.outputs }})
+            const { success, error } = ${{ steps.lint_title_adr.outputs.result }}
+            return success
       - uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
