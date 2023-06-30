@@ -47,10 +47,10 @@ jobs:
             const { success, error } = ${{ steps.lint_title_adr.outputs.result }}
             console.log(success, error)
             return success
-      - uses: marocchino/sticky-pull-request-comment@v2
+      - if: always() && ${{ steps.lint_title_adr.outputs.result.success == false }}
+        uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
-        if: always() && ${{ steps.lint_title_adr.outputs.result.success == false }}
         with:
           header: pr-title-lint-adr-error
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
