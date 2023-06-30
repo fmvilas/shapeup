@@ -69,6 +69,6 @@ jobs:
       - name: Check Exact Files Changed
         uses: fforres/validate-changed-files@v1.0.3
         with:
-          file-patterns: '["doc/adr/00001.md"]'
+          file-patterns: '[doc/adr/0001-.*\.md]'
           comparison-type: "exact"
           token: ${{ secrets.GITHUB_TOKEN }}
