@@ -63,6 +63,6 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-          header: pr-title-lint-error
+          header: pr-title-lint-adr-error
           delete: true
             
