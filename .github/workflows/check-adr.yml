@@ -71,6 +71,7 @@ jobs:
           result-encoding: json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            console.log(context.payload);
             const commits = context.payload.event.commits;
 
             const commitFiles = commits.data[0].files.map(file => file.filename);
