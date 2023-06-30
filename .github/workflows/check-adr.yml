@@ -64,42 +64,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           header: pr-title-lint-adr-error
           delete: true
-      # Check commit changes
-      - name: Check Commit Changes
-        run: |
-          title=${{ github.event.pull_request.title }}
-          pattern="^chore: \[ADR-([0-9]{4})\] .*"
-          if [[ $string =~ $pattern ]]; then
-            number="${BASH_REMATCH[1]}"
-            echo "Extracted Number: $number"
-          else
-            echo "Pattern not matched"
-            exit 1
-          fi
-          for file in "${{ github.event.commits[0].added }}"; do
-            title=$(git log --pretty=format:"%s" -1 $file)
-            echo "Added File: $file"
-            if [[ ! $file =~ ^doc/adr/$number-.*\.md ]]; then
-              echo "Commit changes must only concern files starting with doc/adr/1234-title.md"
-              exit 1
-            fi
-          done
-
-          for file in "${{ github.event.commits[0].modified }}"; do
-            title=$(git log --pretty=format:"%s" -1 $file)
-            echo "Modified File: $file"
-            if [[ ! $file =~ ^doc/adr/$number-.*\.md ]]; then
-              echo "Commit changes must only concern files starting with doc/adr/1234-title.md"
-              exit 1
-            fi
-          done
-
-          for file in "${{ github.event.commits[0].removed }}"; do
-            title=$(git log --pretty=format:"%s" -1 $file)
-            echo "Removed File: $file"
-            if [[ ! $file =~ ^doc/adr/$number-.*\.md ]]; then
-              echo "Commit changes must only concern files starting with doc/adr/1234-title.md"
-              exit 1
-            fi
-          done
-            
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Check Exact Files Changed
+        uses: fforres/validate-changed-files@v1.0.3
+        with:
+          file-patterns: '["doc/adr/00001.md"]'
+          comparison-type: "exact"
+          token: ${{ secrets.GITHUB_TOKEN }}
