@@ -66,9 +66,15 @@ jobs:
           delete: true
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Check commits
-        uses: fforres/validate-changed-files@v1.0.3
+      - name: Run changed-files with json output
+        id: changed-files
+        uses: tj-actions/changed-files@v37
         with:
-          file-patterns: '["doc/adr/1234-test.md"]'
-          comparison-type: "exact"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          json: "true"
+      - name: Display changed files
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log(${{ steps.changed-files.outputs.all_changed_files }})
