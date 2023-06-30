@@ -37,21 +37,21 @@ jobs:
                 success: true,
                 error: ""
             } 
-      - name: Debug
-        uses: actions/github-script@v6
-        id: lint_title_adr_check
-        with:
-          result-encoding: string
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { success, error } = ${{ steps.lint_title_adr.outputs.result }}
-            console.log(success === true)
-            console.log(success == true)
-            console.log(${{ steps.lint_title_adr.outputs.result }})
-            console.log(typeof success)
-            if (!success) {
-              throw new Error(error)
-            }
+      # - name: Debug
+      #   uses: actions/github-script@v6
+      #   id: lint_title_adr_check
+      #   with:
+      #     result-encoding: string
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const { success, error } = ${{ steps.lint_title_adr.outputs.result }}
+      #       console.log(success === true)
+      #       console.log(success == true)
+      #       console.log(${{ steps.lint_title_adr.outputs.result }})
+      #       console.log(typeof success)
+      #       if (!success) {
+      #         throw new Error(error)
+      #       }
       - uses: marocchino/sticky-pull-request-comment@v2
         if: always() && !steps.lint_title_adr.outputs.result.success
         # When the previous steps fails, the workflow would stop. By adding this
