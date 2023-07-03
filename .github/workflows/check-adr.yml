@@ -23,24 +23,28 @@ jobs:
             const title = context.payload.pull_request.title;
             const labels = context.payload.pull_request.labels;
             const hasAdrLabel = labels.some(label => label.name === 'kind/adr');
-            const re = /^chore:\s*\[ADR-\d{4}\]/;
-            const startsWithAdr = (title.match(re) !== null);
+            const re = /^chore:\s*\[ADR-(\d{4}\)]/;
+            const match = title.match(re)
+            const startsWithAdr = (match !== null);
             console.log(`title : ${title} - labels: ${labels} - hasAdrLabel: ${hasAdrLabel} - startsWithAdr: ${startsWithAdr}`);
             if (hasAdrLabel && !startsWithAdr) {
               return {
                 status: "ko",
+                expectedFileMatch: null,
                 message: "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits"
               }
             }
             if (!hasAdrLabel && startsWithAdr) {
               return {
                 status: "ko",
+                expectedFileMatch: null,
                 message: "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits"
               }
             }
             if (hasAdrLabel && startsWithAdr) {
               return {
                 status: "ok",
+                expectedFileMatch: "^doc/adr/${match[1]}-*.md$",
                 message: "The PR has correct title and label"
               }
             }
@@ -86,15 +90,20 @@ jobs:
         run: |
           for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
             echo "$file was changed"
+            if [[ "$file" =~ ${{ steps.lint_title_adr.outputs.result.expectedFileMatch }} ]]; then
+                echo "File matches the pattern"
+            else
+                echo "File does not match the pattern"
+            fi
           done
-      - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
-        name: Display changed files
-        uses: actions/github-script@v6
-        id: check_changed_files
-        with:
-          result-encoding: json
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const changedFilesCount = ${{ steps.changed_files.outputs.all_changed_files_count }};
-            const output = ${{ steps.changed_files.outputs.all_changed_files }};
-            console.log(`output`, output);
+      # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
+      #   name: Display changed files
+      #   uses: actions/github-script@v6
+      #   id: check_changed_files
+      #   with:
+      #     result-encoding: json
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const changedFilesCount = ${{ steps.changed_files.outputs.all_changed_files_count }};
+      #       const output = ${{ steps.changed_files.outputs.all_changed_files }};
+      #       console.log(`output`, output);
