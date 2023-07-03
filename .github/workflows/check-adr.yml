@@ -100,19 +100,19 @@ jobs:
           echo ${{ steps.changed_files_only.outputs.all_changed_files }}
           echo ${{ steps.changed_files_all.outputs.all_changed_files }}
           echo ${{ steps.changed_files_only.outputs.only_changed }}
-          if [[ ${{ steps.changed_files_only.outputs.only_changed }} == 0 ]]; then
-            echo "only_adr=0" >> $GITHUB_OUTPUT 
+          if [[ ${{ steps.changed_files_only.outputs.only_changed }} == 1 ]]; then
+            echo "only_adr=1" >> $GITHUB_OUTPUT 
             exit 0;
           else
-            echo "only_adr=1" >> $GITHUB_OUTPUT 
+            echo "only_adr=0" >> $GITHUB_OUTPUT 
             exit 1;
           fi
       - name: Comment in case of failure
-        if: steps.changed_files_check.outpus.only_adr == 0
+        if: steps.changed_files_check.outpus.only_adr == 1
         run: |
           echo "Comment"
       - name: Comment in case of failure
-        if: steps.changed_files_check.outpus.only_adr == 1
+        if: steps.changed_files_check.outpus.only_adr == 0
         run: |
           echo "Delete comment"
 
