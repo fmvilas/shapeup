@@ -55,7 +55,7 @@ jobs:
             if (${{ steps.lint_title_adr.outputs.result != '' }}) {
               console.log(${{ steps.lint_title_adr.outputs.result }}?.message)
             }
-      - if: always() && ${{ fromJSON(steps.lint_title_adr.outputs.result).status == 'ko' }}
+      - if: always() && (fromJSON(steps.lint_title_adr.outputs.result).status == 'ko')
         uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
@@ -69,25 +69,25 @@ jobs:
             ${{ fromJSON(steps.lint_title_adr.outputs.result).message }}
             ```
       # Delete a previous comment when the issue has been resolved
-      - if: ${{ fromJSON(steps.lint_title_adr.outputs.result).status == 'ok' }}
+      - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           header: pr-title-lint-adr-error
           delete: true
-      - if: ${{ fromJSON(steps.lint_title_adr.outputs.result).status == 'ok' }}
+      - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
         name: Run changed-files with json output
         id: changed_files
         uses: tj-actions/changed-files@v37
         with:
           json: "true"
-      - if: ${{ fromJSON(steps.lint_title_adr.outputs.result).status == 'ok' }}
+      - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
         name: List all changed files
         run: |
           for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
-      - if: ${{ fromJSON(steps.lint_title_adr.outputs.result).status == 'ok' }}
+      - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
         name: Display changed files
         uses: actions/github-script@v6
         id: check_changed_files
