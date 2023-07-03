@@ -95,10 +95,6 @@ jobs:
       - name: Check files that must be changed
         id: changed_files_check
         run: |
-          echo "Other files except ADR file one was changed."
-          echo ${{ steps.changed_files_only.outputs.all_changed_files }}
-          echo ${{ steps.changed_files_all.outputs.all_changed_files }}
-          echo ${{ steps.changed_files_only.outputs.only_changed }}
           if [[ ${{ steps.changed_files_only.outputs.only_changed }} == 'true' ]]; then
             echo "only_adr=1" >> $GITHUB_OUTPUT 
             exit 0;
