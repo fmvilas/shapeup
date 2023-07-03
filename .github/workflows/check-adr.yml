@@ -80,4 +80,4 @@ jobs:
           script: |
             const changedFilesCount = ${{ steps.changed_files.outputs.all_changed_files_count }};
             const output = ${{ steps.changed_files.outputs }};
-            console.log(`keys`, Object.keys(output));
+            console.log(`output`, output);
