@@ -94,7 +94,7 @@ jobs:
         run: |
           echo "Other files except ADR file one was changed."
           echo ${{ steps.changed_files_only.outputs.all_changed_files }}
-          echo ${{ steps.changed_files_all.outputs.only_changed }}
+          echo ${{ steps.changed_files_all.outputs.all_changed_files }}
           echo ${{ steps.changed_files_only.outputs.only_changed }}
           exit 1
       # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
