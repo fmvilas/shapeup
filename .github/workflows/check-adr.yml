@@ -71,6 +71,11 @@ jobs:
         uses: tj-actions/changed-files@v37
         with:
           json: "true"
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
       - name: Display changed files
         uses: actions/github-script@v6
         id: check_changed_files
