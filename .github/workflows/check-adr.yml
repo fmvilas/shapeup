@@ -87,9 +87,10 @@ jobs:
           files: |
             ${{ fromJSON(steps.lint_title_adr.outputs.result).expectedFileMatch }}
       - name: Run step if only the files listed above change
-        if: steps.changed-files-specific.outputs.only_changed == 'false'
+        if: steps.changed_files-specific.outputs.only_changed == 'false'
         run: |
           echo "Other files except ADR file one was changed."
+          echo ${{ steps.changed_files-yaml.outputs.test_all_changed_files }}"
           exit 1
       # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
       #   name: List all changed files
