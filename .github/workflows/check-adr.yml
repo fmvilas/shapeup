@@ -10,7 +10,7 @@ on:
       - unlabeled
 
 jobs:
-  validate_pr:
+  validate_adr_pr:
     runs-on: ubuntu-latest
     steps:
       - name: Parse PR label and title
@@ -44,7 +44,7 @@ jobs:
             if (hasAdrLabel && startsWithAdr) {
               return {
                 status: "ok",
-                expectedFileMatch: "^doc/adr/${match[1]}-*.md$",
+                expectedFileMatch: `^doc/adr/${match[1]}-*.md$`,
                 message: "The PR has correct title and label"
               }
             }
