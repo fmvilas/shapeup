@@ -44,7 +44,7 @@ jobs:
             if (hasAdrLabel && startsWithAdr) {
               return {
                 status: "ok",
-                expectedFileMatch: `^doc/adr/${match[1]}-*.md$`,
+                expectedFileMatch: `doc/adr/${match[1]}-*.md`,
                 message: "The PR has correct title and label"
               }
             }
@@ -84,18 +84,23 @@ jobs:
         id: changed_files
         uses: tj-actions/changed-files@v37
         with:
-          json: "true"
-      - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
-        name: List all changed files
+          files: |
+            ${{ fromJSON(steps.lint_title_adr.outputs.result).expectedFileMatch }}
+      - name: Run step if only the files listed above change
+        if: steps.changed-files-specific.outputs.only_changed == 'true' && (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
         run: |
-          for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-            if [[ "$file" =~ ${{ fromJSON(steps.lint_title_adr.outputs.result).expectedFileMatch }} ]]; then
-                echo "File matches the pattern"
-            else
-                echo "File does not match the pattern"
-            fi
-          done
+          echo "Only files listed above have changed."
+      # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
+      #   name: List all changed files
+      #   run: |
+      #     for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
+      #       echo "$file was changed"
+      #       if [[ "$file" =~ ${{ fromJSON(steps.lint_title_adr.outputs.result).expectedFileMatch }} ]]; then
+      #           echo "File matches the pattern"
+      #       else
+      #           echo "File does not match the pattern"
+      #       fi
+      #     done
       # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
       #   name: Display changed files
       #   uses: actions/github-script@v6
