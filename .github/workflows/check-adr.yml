@@ -12,8 +12,6 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
     steps:
       - name: Parse PR label and title
         uses: actions/github-script@v6
