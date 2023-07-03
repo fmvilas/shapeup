@@ -80,8 +80,12 @@ jobs:
           header: pr-title-lint-adr-error
           delete: true
       - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
-        name: Run changed-files with json output
-        id: changed_files
+        name: Get all changed files
+        id: changed_files_all
+        uses: tj-actions/changed-files@v37
+      - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
+        name: Get files that should be changed
+        id: changed_files_only
         uses: tj-actions/changed-files@v37
         with:
           files: |
@@ -89,8 +93,9 @@ jobs:
       - name: Run step if only the files listed above change
         run: |
           echo "Other files except ADR file one was changed."
-          echo ${{ steps.changed_files.outputs.all_changed_files }}
-          echo ${{ steps.changed_files.outputs.only_changed }}
+          echo ${{ steps.changed_files_only.outputs.all_changed_files }}
+          echo ${{ steps.changed_files_all.outputs.only_changed }}
+          echo ${{ steps.changed_files_only.outputs.only_changed }}
           exit 1
       # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
       #   name: List all changed files
