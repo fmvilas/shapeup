@@ -79,5 +79,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const changedFilesCount = ${{ steps.changed_files.outputs.all_changed_files_count }};
-            const modifiedFiles = ${{ steps.changed_files.outputs?.all_modified_files }};
-            console.log(`modifiedFiles`, modifiedFiles);
+            const output = ${{ steps.changed_files.outputs }};
+            console.log(`keys`, Object.keys(steps.changed_files.outputs));
