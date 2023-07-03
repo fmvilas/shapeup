@@ -66,10 +66,10 @@ jobs:
             Hey there and thank you for opening this ADR pull request! 👋🏼
             The ADR Pull request must follow this PR naming convention: 
             ```
-            ${{ steps.lint_title_adr.outputs.result.message }}
+            ${{ steps.lint_title_adr.outputs.result}}?.message
             ```
       # Delete a previous comment when the issue has been resolved
-      - if: steps.lint_title_adr.outputs.result == ''
+      - if: ${{ steps.lint_title_adr.outputs.result }}?.status == "ok"
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
