@@ -100,22 +100,15 @@ jobs:
           echo ${{ steps.changed_files_only.outputs.all_changed_files }}
           echo ${{ steps.changed_files_all.outputs.all_changed_files }}
           echo ${{ steps.changed_files_only.outputs.only_changed }}
-          if [[ ${{ steps.changed_files_only.outputs.only_changed }} == 'true' ]]; then
+          if [[ ${{ steps.changed_files_only.outputs.only_changed }} == 'false' ]]; then
             echo "only_adr=1" >> $GITHUB_OUTPUT 
             exit 0;
           else
             echo "only_adr=0" >> $GITHUB_OUTPUT 
             exit 1;
           fi
-      - name: Comment files changed
-        if: always() && steps.changed_files_check.outputs.only_adr == 0
-        run: |
-          echo "Comment"
-      - name: Delete comment fail changed
-        if: steps.changed_files_check.outputs.only_adr == 1
-        run: |
-          echo "Delete comment"
       - if: always() && steps.changed_files_check.outputs.only_adr == 0
+        name: Comment files changed
         uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
@@ -131,6 +124,7 @@ jobs:
             ```
       # Delete a previous comment when the issue has been resolved
       - if: steps.changed_files_check.outputs.only_adr == 1
+        name: Delete comment fail changed
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
