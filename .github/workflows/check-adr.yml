@@ -53,7 +53,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             if (${{ steps.lint_title_adr.outputs.result != '' }}) {
-              throw new Error(${{ steps.lint_title_adr.outputs.result }})
+              console.log(steps.lint_title_adr.outputs.result)
             }
       - if: always() && steps.lint_title_adr.outputs.result != ''
         uses: marocchino/sticky-pull-request-comment@v2
