@@ -75,17 +75,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           header: pr-title-lint-adr-error
           delete: true
-      - name: Run changed-files with json output
+      - if: ${{ steps.lint_title_adr.outputs.result.status == 'ok' }}
+        name: Run changed-files with json output
         id: changed_files
         uses: tj-actions/changed-files@v37
         with:
           json: "true"
-      - name: List all changed files
+      - if: ${{ steps.lint_title_adr.outputs.result.status == 'ok' }}
+        name: List all changed files
         run: |
           for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
-      - name: Display changed files
+      - if: ${{ steps.lint_title_adr.outputs.result.status == 'ok' }}
+        name: Display changed files
         uses: actions/github-script@v6
         id: check_changed_files
         with:
@@ -93,5 +96,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const changedFilesCount = ${{ steps.changed_files.outputs.all_changed_files_count }};
-            const output = ${{ steps.changed_files.outputs }};
+            const output = ${{ steps.changed_files.outputs.all_changed_files }};
             console.log(`output`, output);
