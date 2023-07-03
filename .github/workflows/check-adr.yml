@@ -26,7 +26,6 @@ jobs:
             const re = /^chore:\s*\[ADR-(\d{4})\]/;
             const match = title.match(re)
             const startsWithAdr = (match !== null);
-            console.log(`title : ${title} - labels: ${labels} - hasAdrLabel: ${hasAdrLabel} - startsWithAdr: ${startsWithAdr}`);
             if (hasAdrLabel && !startsWithAdr) {
               return {
                 status: "ko",
@@ -130,25 +129,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           header: pr-files-changed-adr-error
           delete: true
-      # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
-      #   name: List all changed files
-      #   run: |
-      #     for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
-      #       echo "$file was changed"
-      #       if [[ "$file" =~ ${{ fromJSON(steps.lint_title_adr.outputs.result).expectedFileMatch }} ]]; then
-      #           echo "File matches the pattern"
-      #       else
-      #           echo "File does not match the pattern"
-      #       fi
-      #     done
-      # - if: (fromJSON(steps.lint_title_adr.outputs.result).status == 'ok')
-      #   name: Display changed files
-      #   uses: actions/github-script@v6
-      #   id: check_changed_files
-      #   with:
-      #     result-encoding: json
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |
-      #       const changedFilesCount = ${{ steps.changed_files.outputs.all_changed_files_count }};
-      #       const output = ${{ steps.changed_files.outputs.all_changed_files }};
-      #       console.log(`output`, output);
