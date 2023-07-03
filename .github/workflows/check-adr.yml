@@ -90,7 +90,7 @@ jobs:
         run: |
           for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
             echo "$file was changed"
-            if [[ "$file" =~ ${{ steps.lint_title_adr.outputs.result.expectedFileMatch }} ]]; then
+            if [[ "$file" =~ ${{ fromJSON(steps.lint_title_adr.outputs.result).expectedFileMatch }} ]]; then
                 echo "File matches the pattern"
             else
                 echo "File does not match the pattern"
