@@ -30,21 +30,21 @@ jobs:
               return {
                 status: "ko",
                 expectedFileMatch: null,
-                message: "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits"
+                message: "This PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits"
               }
             }
             if (!hasAdrLabel && startsWithAdr) {
               return {
                 status: "ko",
                 expectedFileMatch: null,
-                message: "The PR Title must starts with `chore: [ADR-nnnn] name of ADR` where `nnnn` is the adr number (e.g `chore: [ADR-0001] use architecture decision records`) same us commits"
+                message: "This PR must be labled as kind/adr"
               }
             }
             if (hasAdrLabel && startsWithAdr) {
               return {
                 status: "ok",
                 expectedFileMatch: `doc/adr/${match[1]}-*.md`,
-                message: "The PR has correct title and label"
+                message: "This PR has correct title and label"
               }
             }
             return ''
