@@ -108,7 +108,7 @@ jobs:
             exit 1;
           fi
       - name: Comment files changed
-        if: steps.changed_files_check.outpus.only_adr == 1
+        if: always() && steps.changed_files_check.outpus.only_adr == 1
         run: |
           echo "Comment"
       - name: Delete comment fail changed
